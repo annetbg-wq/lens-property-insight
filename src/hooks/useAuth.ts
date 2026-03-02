@@ -16,8 +16,26 @@ export function useAuth() {
   });
 
   useEffect(() => {
+    let isMounted = true;
+
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (isMounted) {
+        setState({
+          user: session?.user ?? null,
+          session,
+          loading: false,
+        });
+      }
+    };
+
+    void initializeAuth();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (_event, session) => {
+        if (!isMounted) return;
+
         setState({
           user: session?.user ?? null,
           session,
@@ -26,15 +44,10 @@ export function useAuth() {
       }
     );
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setState({
-        user: session?.user ?? null,
-        session,
-        loading: false,
-      });
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signOut = useCallback(async () => {
