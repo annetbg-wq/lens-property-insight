@@ -2,23 +2,20 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AuthGuard } from "@/components/AuthGuard";
-import { AppShell } from "@/components/AppShell";
+import { I18nProvider } from "@/lib/i18n";
+import { Header } from "@/components/Header";
 import { Loader2 } from "lucide-react";
 
-const Landing = lazy(() => import("./pages/Landing"));
-const Login = lazy(() => import("./pages/Login"));
-const Signup = lazy(() => import("./pages/Signup"));
-const Dashboard = lazy(() => import("./pages/Dashboard"));
-const Analysis = lazy(() => import("./pages/Analysis"));
-const HistoryPage = lazy(() => import("./pages/HistoryPage"));
-const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const Home = lazy(() => import("./pages/Home"));
+const NewAssessment = lazy(() => import("./pages/NewAssessment"));
+const Result = lazy(() => import("./pages/Result"));
+const SharePage = lazy(() => import("./pages/SharePage"));
+const Library = lazy(() => import("./pages/Library"));
+const Compare = lazy(() => import("./pages/Compare"));
+const About = lazy(() => import("./pages/About"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-
-const queryClient = new QueryClient();
 
 function PageLoader() {
   return (
@@ -30,34 +27,31 @@ function PageLoader() {
 
 const App = () => (
   <ThemeProvider defaultTheme="light">
-    <QueryClientProvider client={queryClient}>
+    <I18nProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Landing />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route
-                element={
-                  <AuthGuard>
-                    <AppShell />
-                  </AuthGuard>
-                }
-              >
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/analysis/:id" element={<Analysis />} />
-                <Route path="/history" element={<HistoryPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
-              </Route>
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+          <div className="min-h-screen bg-background text-foreground">
+            <Header />
+            <main>
+              <Suspense fallback={<PageLoader />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/new" element={<NewAssessment />} />
+                  <Route path="/result/:id" element={<Result />} />
+                  <Route path="/share/:id" element={<SharePage />} />
+                  <Route path="/library" element={<Library />} />
+                  <Route path="/compare" element={<Compare />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </main>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClientProvider>
+    </I18nProvider>
   </ThemeProvider>
 );
 
