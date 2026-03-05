@@ -3,6 +3,7 @@ import { useTranslation } from '@/lib/i18n';
 import { getAssessment, saveAssessment } from '@/lib/storage';
 import { FlashVerdictCard } from '@/components/FlashVerdictCard';
 import { EvidenceSection } from '@/components/EvidenceSection';
+import { PropertyMap } from '@/components/PropertyMap';
 import { MapBackground } from '@/components/MapBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
