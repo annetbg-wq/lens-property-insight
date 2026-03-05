@@ -1,14 +1,18 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
+import { useViewMode } from '@/contexts/ViewModeContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { LANGUAGES, type Language } from '@/lib/translations';
-import { Menu, Activity } from 'lucide-react';
+import { Menu, Activity, User, Briefcase } from 'lucide-react';
 import { useState } from 'react';
 
 export function Header() {
   const { t, language, setLanguage } = useTranslation();
+  const { viewMode, setViewMode } = useViewMode();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -51,6 +55,17 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Agent/Client mode toggle */}
+          <div className="hidden md:flex items-center gap-1.5 rounded-lg border border-border/40 px-2 py-1">
+            <User className={`h-3 w-3 ${viewMode === 'client' ? 'text-primary' : 'text-muted-foreground'}`} />
+            <Switch 
+              checked={viewMode === 'agent'}
+              onCheckedChange={(checked) => setViewMode(checked ? 'agent' : 'client')}
+              className="scale-75"
+            />
+            <Briefcase className={`h-3 w-3 ${viewMode === 'agent' ? 'text-primary' : 'text-muted-foreground'}`} />
+          </div>
+
           <Select value={language} onValueChange={v => setLanguage(v as Language)}>
             <SelectTrigger className="h-7 w-[80px] text-[11px] border-border/50 bg-secondary/30 rounded-lg">
               <SelectValue />
@@ -86,6 +101,17 @@ export function Header() {
                     </Button>
                   </Link>
                 ))}
+                {/* Mobile mode toggle */}
+                <div className="flex items-center gap-2 mt-4 px-4 py-2 rounded-lg border border-border/30">
+                  <User className={`h-3.5 w-3.5 ${viewMode === 'client' ? 'text-primary' : 'text-muted-foreground'}`} />
+                  <Label className="text-xs text-muted-foreground">Клиент</Label>
+                  <Switch 
+                    checked={viewMode === 'agent'}
+                    onCheckedChange={(checked) => setViewMode(checked ? 'agent' : 'client')}
+                  />
+                  <Label className="text-xs text-muted-foreground">Агент</Label>
+                  <Briefcase className={`h-3.5 w-3.5 ${viewMode === 'agent' ? 'text-primary' : 'text-muted-foreground'}`} />
+                </div>
                 <Link to="/new" onClick={() => setOpen(false)} className="mt-3">
                   <Button className="w-full rounded-lg gap-1.5 bg-primary text-primary-foreground">
                     {t('nav.new')}
