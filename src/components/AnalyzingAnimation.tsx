@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
 import { useTranslation } from '@/lib/i18n';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
-const STEPS = ['analyzing.step1', 'analyzing.step2', 'analyzing.step3', 'analyzing.step4'];
+const STEPS = ['analyzing.step1', 'analyzing.step2', 'analyzing.step3', 'analyzing.step4', 'analyzing.step5'];
 
 interface AnalyzingAnimationProps {
   onComplete: () => void;
@@ -12,25 +12,32 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const [progress, setProgress] = useState(0);
+  const calledRef = useRef(false);
 
+  // Call onComplete immediately on mount — the parent handles async + navigation
   useEffect(() => {
-    const stepInterval = setInterval(() => {
-      setStep(s => {
-        if (s >= STEPS.length - 1) {
-          clearInterval(stepInterval);
-          setTimeout(onComplete, 400);
-          return s;
-        }
-        return s + 1;
-      });
-    }, 650);
-    return () => clearInterval(stepInterval);
+    if (!calledRef.current) {
+      calledRef.current = true;
+      onComplete();
+    }
   }, [onComplete]);
 
+  // Animate steps continuously while waiting
+  useEffect(() => {
+    const stepInterval = setInterval(() => {
+      setStep(s => (s + 1) % STEPS.length);
+    }, 1200);
+    return () => clearInterval(stepInterval);
+  }, []);
+
+  // Progress bar that fills slowly and loops
   useEffect(() => {
     const progInterval = setInterval(() => {
-      setProgress(p => Math.min(p + 1.8, 100));
-    }, 28);
+      setProgress(p => {
+        if (p >= 95) return 95; // Hold near end
+        return p + 0.5;
+      });
+    }, 60);
     return () => clearInterval(progInterval);
   }, []);
 
@@ -45,14 +52,10 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
 
       {/* Radar sweep */}
       <div className="relative mb-14">
-        {/* Outer ring */}
         <div className="h-28 w-28 rounded-full border border-primary/10" />
-        {/* Mid ring */}
         <div className="absolute inset-3 rounded-full border border-primary/15" />
-        {/* Inner ring */}
         <div className="absolute inset-6 rounded-full border border-primary/20" />
         
-        {/* Sweep arm */}
         <motion.div
           className="absolute inset-0"
           animate={{ rotate: 360 }}
@@ -67,7 +70,6 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
           />
         </motion.div>
 
-        {/* Sweep glow cone */}
         <motion.div
           className="absolute inset-0 rounded-full"
           animate={{ rotate: 360 }}
@@ -81,17 +83,14 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
           />
         </motion.div>
 
-        {/* Center dot */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-2 w-2 rounded-full bg-primary animate-pulse-slow" />
         </div>
 
-        {/* Glow */}
         <div className="absolute inset-0 rounded-full blur-2xl opacity-20"
           style={{ background: 'radial-gradient(hsl(160 84% 39%), transparent)' }}
         />
 
-        {/* Floating pings */}
         {[
           { top: '20%', left: '70%', delay: 0.5 },
           { top: '60%', left: '25%', delay: 1.2 },
@@ -116,31 +115,46 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
         {t('analyzing.title')}
       </motion.h2>
 
+      <p className="text-[10px] font-mono text-primary mb-3 relative z-10 animate-pulse">
+        ИИ анализирует объект...
+      </p>
+
       {/* Progress bar */}
-      <div className="w-40 h-[2px] rounded-full bg-secondary overflow-hidden mt-3 mb-8 relative z-10">
+      <div className="w-40 h-[2px] rounded-full bg-secondary overflow-hidden mt-1 mb-8 relative z-10">
         <motion.div className="h-full rounded-full bg-primary" style={{ width: `${progress}%` }} />
       </div>
 
       {/* Steps */}
       <div className="flex flex-col items-start gap-2 relative z-10">
-        {STEPS.map((s, i) => (
-          <motion.div
-            key={s}
-            className="flex items-center gap-2.5"
-            initial={{ opacity: 0, x: -8 }}
-            animate={{ opacity: i <= step ? 1 : 0.15, x: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.08 }}
-          >
-            <div className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${
-              i < step ? 'bg-primary' : i === step ? 'bg-primary animate-pulse' : 'bg-muted-foreground/20'
-            }`} />
-            <p className={`text-xs font-mono transition-colors duration-300 ${
-              i <= step ? 'text-foreground' : 'text-muted-foreground/30'
-            }`}>
-              {t(s)}
-            </p>
-          </motion.div>
-        ))}
+        {STEPS.map((s, i) => {
+          const translationKey = s as any;
+          const fallbacks: Record<string, string> = {
+            'analyzing.step1': 'Сканирование кадастровых данных...',
+            'analyzing.step2': 'Анализ зонирования и FAR...',
+            'analyzing.step3': 'Оценка инфраструктуры и транспорта...',
+            'analyzing.step4': 'Расчёт рыночных трендов...',
+            'analyzing.step5': 'Формирование ИИ-вердикта...',
+          };
+          const text = t(translationKey) !== translationKey ? t(translationKey) : fallbacks[s] || s;
+          return (
+            <motion.div
+              key={s}
+              className="flex items-center gap-2.5"
+              initial={{ opacity: 0, x: -8 }}
+              animate={{ opacity: i <= step ? 1 : 0.15, x: 0 }}
+              transition={{ duration: 0.3, delay: i * 0.08 }}
+            >
+              <div className={`h-1.5 w-1.5 rounded-full transition-all duration-500 ${
+                i < step ? 'bg-primary' : i === step ? 'bg-primary animate-pulse' : 'bg-muted-foreground/20'
+              }`} />
+              <p className={`text-xs font-mono transition-colors duration-300 ${
+                i <= step ? 'text-foreground' : 'text-muted-foreground/30'
+              }`}>
+                {text}
+              </p>
+            </motion.div>
+          );
+        })}
       </div>
     </motion.div>
   );

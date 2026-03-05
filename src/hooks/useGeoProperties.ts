@@ -94,8 +94,7 @@ const REGIONS: GeoRegion[] = [
   },
 ];
 
-// Default fallback region
-const DEFAULT_REGION = REGIONS[0]; // Moscow
+const DEFAULT_REGION = REGIONS[0];
 
 function getDistance(lat1: number, lng1: number, lat2: number, lng2: number): number {
   const R = 6371;
@@ -132,6 +131,33 @@ export interface UseGeoPropertiesReturn {
   userLng: number | null;
 }
 
+async function getLocationByIP(): Promise<{ lat: number; lng: number } | null> {
+  try {
+    // Try multiple free IP geolocation services
+    const res = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.latitude && data.longitude) {
+        return { lat: data.latitude, lng: data.longitude };
+      }
+    }
+  } catch {
+    // fallback
+  }
+  try {
+    const res = await fetch('https://ip-api.com/json/?fields=lat,lon', { signal: AbortSignal.timeout(5000) });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.lat && data.lon) {
+        return { lat: data.lat, lng: data.lon };
+      }
+    }
+  } catch {
+    // fallback
+  }
+  return null;
+}
+
 export function useGeoProperties(): UseGeoPropertiesReturn {
   const [userLat, setUserLat] = useState<number | null>(null);
   const [userLng, setUserLng] = useState<number | null>(null);
@@ -139,23 +165,44 @@ export function useGeoProperties(): UseGeoPropertiesReturn {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setError('Geolocation not supported');
-      setLoading(false);
-      return;
+    let cancelled = false;
+
+    async function detectLocation() {
+      // Try browser geolocation first
+      if (navigator.geolocation) {
+        try {
+          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 5000,
+            });
+          });
+          if (!cancelled) {
+            setUserLat(pos.coords.latitude);
+            setUserLng(pos.coords.longitude);
+            setLoading(false);
+            return;
+          }
+        } catch {
+          // Browser geo failed, try IP
+        }
+      }
+
+      // Fallback: IP-based geolocation
+      const ipLoc = await getLocationByIP();
+      if (!cancelled) {
+        if (ipLoc) {
+          setUserLat(ipLoc.lat);
+          setUserLng(ipLoc.lng);
+        } else {
+          setError('Could not detect location');
+        }
+        setLoading(false);
+      }
     }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setUserLat(pos.coords.latitude);
-        setUserLng(pos.coords.longitude);
-        setLoading(false);
-      },
-      () => {
-        // Fallback to default region
-        setLoading(false);
-      },
-      { enableHighAccuracy: false, timeout: 5000 }
-    );
+
+    detectLocation();
+    return () => { cancelled = true; };
   }, []);
 
   const region = useMemo(() => {
