@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { I18nProvider } from "@/lib/i18n";
+import { ViewModeProvider } from "@/contexts/ViewModeContext";
 import { Header } from "@/components/Header";
 import { Loader2 } from "lucide-react";
 
@@ -28,6 +29,7 @@ function PageLoader() {
 const App = () => (
   <ThemeProvider defaultTheme="dark">
     <I18nProvider>
+      <ViewModeProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
@@ -51,6 +53,7 @@ const App = () => (
           </div>
         </BrowserRouter>
       </TooltipProvider>
+      </ViewModeProvider>
     </I18nProvider>
   </ThemeProvider>
 );

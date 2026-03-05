@@ -1,5 +1,6 @@
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
+import { useViewMode } from '@/contexts/ViewModeContext';
 import { getAssessment, saveAssessment } from '@/lib/storage';
 import { FlashVerdictCard } from '@/components/FlashVerdictCard';
 import { EvidenceSection } from '@/components/EvidenceSection';
@@ -9,8 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { Bookmark, Share2, ArrowLeftRight, AlertTriangle, ArrowRight, Shield, CheckCircle2, Info, Activity, Check, Map } from 'lucide-react';
@@ -21,9 +20,9 @@ const fadeUp = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } };
 export default function Result() {
   const { id } = useParams<{ id: string }>();
   const { t } = useTranslation();
+  const { viewMode, isClient } = useViewMode();
   const navigate = useNavigate();
   const [result, setResult] = useState<AssessmentResult | null>(null);
-  const [agentView, setAgentView] = useState(true);
   const [saved, setSaved] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -48,6 +47,7 @@ export default function Result() {
   };
 
   const confLabel = result.confidence === 'high' ? t('result.high_conf') : result.confidence === 'medium' ? t('result.med_conf') : t('result.low_conf');
+  const agentView = viewMode === 'agent';
 
   return (
     <MapBackground className="min-h-screen">
@@ -64,11 +64,6 @@ export default function Result() {
             </div>
             <h1 className="text-xl font-bold md:text-2xl">{result.displayName}</h1>
             <p className="mt-0.5 text-xs text-muted-foreground font-mono">{new Date(result.createdAt).toLocaleDateString()}</p>
-          </div>
-          <div className="flex items-center gap-2 rounded-lg glass px-3 py-2">
-            <Label htmlFor="view-toggle" className="text-[10px] cursor-pointer font-mono text-muted-foreground uppercase tracking-wider">{t('result.client_view')}</Label>
-            <Switch id="view-toggle" checked={agentView} onCheckedChange={setAgentView} />
-            <Label htmlFor="view-toggle" className="text-[10px] cursor-pointer font-mono text-muted-foreground uppercase tracking-wider">{t('result.agent_view')}</Label>
           </div>
         </motion.div>
 
@@ -142,7 +137,7 @@ export default function Result() {
                     <h3 className="font-semibold text-sm">{f.title}</h3>
                     <Badge
                       variant={f.severity === 'high' ? 'destructive' : 'secondary'}
-                      className="text-[8px] rounded h-4 px-1.5 font-mono uppercase"
+                      className="text-[8px] rounded h-4 px-1.5 font-mono uppercase shrink-0"
                     >
                       {f.severity}
                     </Badge>
@@ -235,7 +230,7 @@ function NextStepItem({ step, index }: { step: { title: string; description: str
         }`}>
           {checked && <CheckCircle2 className="h-3 w-3 text-primary-foreground" />}
         </div>
-        <div>
+        <div className="min-w-0">
           <h3 className={`font-semibold text-sm transition-all ${checked ? 'line-through text-muted-foreground' : ''}`}>{step.title}</h3>
           <p className="mt-0.5 text-xs text-muted-foreground leading-relaxed">{step.description}</p>
         </div>

@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/lib/i18n';
+import { useViewMode } from '@/contexts/ViewModeContext';
+import { useGeoProperties } from '@/hooks/useGeoProperties';
 import { motion } from 'framer-motion';
-import { ArrowRight, Activity, ChevronRight, Crosshair, Layers, Map, Shield, Radar } from 'lucide-react';
-import { getDemoResult } from '@/lib/demoCases';
+import { ArrowRight, Activity, ChevronRight, Crosshair, Layers, Map, Shield, Radar, MapPin, DollarSign, Euro, Loader2 } from 'lucide-react';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { MapBackground } from '@/components/MapBackground';
 
@@ -12,12 +13,8 @@ const stagger = { visible: { transition: { staggerChildren: 0.1 } } };
 
 export default function Home() {
   const { t } = useTranslation();
-
-  const demoCards = [
-    { key: 'apartment', emoji: '🏢' },
-    { key: 'house', emoji: '🏡' },
-    { key: 'commercial', emoji: '🏬' },
-  ];
+  const { isClient } = useViewMode();
+  const { properties, regionName, loading } = useGeoProperties();
 
   const layers = [
     { icon: Map, label: 'Cadastral', desc: 'Границы участков и размеры', color: 'text-primary' },
@@ -78,56 +75,83 @@ export default function Home() {
             </motion.div>
           </div>
 
-          {/* Flash-Verdict demo cards */}
+          {/* Geo-based demo cards */}
           <motion.div
-            className="mt-20 grid grid-cols-1 gap-3 sm:grid-cols-3"
+            className="mt-20"
             variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}
           >
-            {demoCards.map(({ key, emoji }) => {
-              const result = getDemoResult(key);
-              if (!result) return null;
-              const zoneClass = result.zone === 'green' ? 'border-primary/20' : result.zone === 'yellow' ? 'border-accent/20' : 'border-destructive/20';
-              const scoreColor = result.zone === 'green' ? 'score-green' : result.zone === 'yellow' ? 'score-amber' : 'score-red';
-              return (
-                <motion.div key={key} variants={fadeUp}>
-                  <div className={`glass rounded-lg viewfinder viewfinder-bottom p-4 hover-lift cursor-pointer border ${zoneClass}`}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg">{emoji}</span>
-                        <div>
-                          <p className="text-xs font-semibold truncate max-w-[130px]">{result.displayName.split(',')[0]}</p>
-                          <p className="text-[9px] text-muted-foreground font-mono uppercase tracking-wider">{result.input.goal}</p>
+            {/* Region indicator */}
+            <motion.div variants={fadeUp} className="flex items-center justify-center gap-2 mb-5">
+              <MapPin className="h-3 w-3 text-primary" />
+              <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider">
+                {loading ? 'Определение локации...' : `Рядом с вами • ${regionName}`}
+              </span>
+              {loading && <Loader2 className="h-3 w-3 animate-spin text-primary" />}
+            </motion.div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              {properties.map(({ result, priceUSD, priceEUR, dealType, emoji }) => {
+                const zoneClass = result.zone === 'green' ? 'border-primary/20' : result.zone === 'yellow' ? 'border-accent/20' : 'border-destructive/20';
+                const scoreColor = result.zone === 'green' ? 'score-green' : result.zone === 'yellow' ? 'score-amber' : 'score-red';
+                return (
+                  <motion.div key={result.id} variants={fadeUp}>
+                    <div className={`glass rounded-lg viewfinder viewfinder-bottom p-4 hover-lift cursor-pointer border ${zoneClass}`}>
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span className="text-lg shrink-0">{emoji}</span>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold truncate">{result.displayName.split(',')[0]}</p>
+                            <p className="text-[9px] text-muted-foreground font-mono uppercase tracking-wider">{dealType}</p>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0 ml-2">
+                          <span className={`text-2xl font-bold font-mono ${scoreColor}`}>{result.score}</span>
+                          <p className="text-[8px] text-muted-foreground font-mono">/100</p>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className={`text-2xl font-bold font-mono ${scoreColor}`}>{result.score}</span>
-                        <p className="text-[8px] text-muted-foreground font-mono">/100</p>
+                      
+                      {/* Prices */}
+                      <div className="flex items-center gap-3 mb-2 py-1.5 px-2 rounded bg-secondary/30 border border-border/15">
+                        <div className="flex items-center gap-1">
+                          <DollarSign className="h-2.5 w-2.5 text-muted-foreground" />
+                          <span className="text-[10px] font-mono font-semibold text-foreground">
+                            {priceUSD >= 10000 ? `${(priceUSD / 1000).toFixed(0)}K` : priceUSD.toLocaleString()}
+                          </span>
+                        </div>
+                        <div className="h-3 w-px bg-border/30" />
+                        <div className="flex items-center gap-1">
+                          <Euro className="h-2.5 w-2.5 text-muted-foreground" />
+                          <span className="text-[10px] font-mono font-semibold text-foreground">
+                            {priceEUR >= 10000 ? `${(priceEUR / 1000).toFixed(0)}K` : priceEUR.toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Punchy points */}
+                      <div className="space-y-1">
+                        {result.reasons.slice(0, 2).map((r, i) => (
+                          <p key={i} className="text-[10px] text-muted-foreground flex items-start gap-1.5">
+                            <span className={`mt-1 h-1 w-1 rounded-full shrink-0 ${
+                              result.zone === 'green' ? 'bg-primary' : result.zone === 'yellow' ? 'bg-accent' : 'bg-destructive'
+                            }`} />
+                            <span className="line-clamp-1">{r.title}</span>
+                          </p>
+                        ))}
+                      </div>
+                      {/* Sub-scores */}
+                      <div className="mt-3 flex gap-1.5">
+                        {(['risk', 'return', 'stability'] as const).map(k => (
+                          <div key={k} className="flex-1 rounded bg-secondary/40 border border-border/20 p-1.5 text-center">
+                            <p className="text-xs font-bold font-mono">{result.subScores[k]}</p>
+                            <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{t(`result.${k}`)}</p>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    {/* Punchy points */}
-                    <div className="space-y-1">
-                      {result.reasons.slice(0, 2).map((r, i) => (
-                        <p key={i} className="text-[10px] text-muted-foreground flex items-start gap-1.5">
-                          <span className={`mt-1 h-1 w-1 rounded-full shrink-0 ${
-                            result.zone === 'green' ? 'bg-primary' : result.zone === 'yellow' ? 'bg-accent' : 'bg-destructive'
-                          }`} />
-                          <span className="line-clamp-1">{r.title}</span>
-                        </p>
-                      ))}
-                    </div>
-                    {/* Sub-scores */}
-                    <div className="mt-3 flex gap-1.5">
-                      {(['risk', 'return', 'stability'] as const).map(k => (
-                        <div key={k} className="flex-1 rounded bg-secondary/40 border border-border/20 p-1.5 text-center">
-                          <p className="text-xs font-bold font-mono">{result.subScores[k]}</p>
-                          <p className="text-[8px] text-muted-foreground uppercase tracking-wider">{t(`result.${k}`)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
         </div>
       </MapBackground>
@@ -154,7 +178,7 @@ export default function Home() {
                 className="glass rounded-lg p-5 hover-lift border border-border/30 group"
               >
                 <div className="flex items-start gap-3">
-                  <div className={`flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/60 border border-border/30 group-hover:border-primary/20 transition-colors`}>
+                  <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-secondary/60 border border-border/30 group-hover:border-primary/20 transition-colors shrink-0">
                     <layer.icon className={`h-4 w-4 ${layer.color}`} />
                   </div>
                   <div>
