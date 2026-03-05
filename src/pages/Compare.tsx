@@ -2,15 +2,20 @@ import { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
 import { getAllAssessmentsList, getAssessment } from '@/lib/storage';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScoreGauge } from '@/components/ScoreGauge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeftRight, FileText } from 'lucide-react';
+import { ArrowLeftRight, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
 import type { AssessmentResult, Zone } from '@/types/assessment';
 
 const zoneLabel: Record<Zone, string> = { green: 'result.green', yellow: 'result.yellow', red: 'result.red' };
-const zoneBg: Record<Zone, string> = { green: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300', yellow: 'bg-amber-50 text-amber-700 dark:bg-amber-950 dark:text-amber-300', red: 'bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300' };
+const zoneStyles: Record<Zone, string> = {
+  green: 'bg-accent/10 text-accent',
+  yellow: 'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+  red: 'bg-destructive/10 text-destructive',
+};
 
 export default function Compare() {
   const { t } = useTranslation();
@@ -25,66 +30,81 @@ export default function Compare() {
 
   if (all.length < 2) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <ArrowLeftRight className="mx-auto mb-4 h-12 w-12 text-muted-foreground/40" />
-        <h1 className="text-xl font-semibold">{t('compare.title')}</h1>
-        <p className="mt-2 text-muted-foreground">{t('compare.no_items')}</p>
-        <Link to="/library"><Button className="mt-6 rounded-full" variant="outline">{t('nav.library')}</Button></Link>
+      <div className="min-h-[calc(100vh-4rem)] mesh-gradient flex items-center justify-center">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center px-4">
+          <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
+            <ArrowLeftRight className="h-7 w-7 text-muted-foreground/50" />
+          </div>
+          <h1 className="text-2xl font-bold font-display">{t('compare.title')}</h1>
+          <p className="mt-2 text-muted-foreground">{t('compare.no_items')}</p>
+          <Link to="/library"><Button className="mt-6 rounded-full" variant="outline">{t('nav.library')}</Button></Link>
+        </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="text-2xl font-bold">{t('compare.title')}</h1>
-      <p className="mt-1 text-sm text-muted-foreground">{t('compare.subtitle')}</p>
+    <div className="min-h-[calc(100vh-4rem)] mesh-gradient">
+      <div className="mx-auto max-w-5xl px-4 py-12">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <h1 className="text-2xl font-black font-display">{t('compare.title')}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">{t('compare.subtitle')}</p>
+        </motion.div>
 
-      {items.length < 2 && (
-        <div className="mt-8 text-center">
-          <p className="text-muted-foreground">{t('compare.no_items')}</p>
-          <Link to="/library"><Button className="mt-4 rounded-full" variant="outline">{t('nav.library')}</Button></Link>
-        </div>
-      )}
+        {items.length < 2 && (
+          <div className="mt-10 text-center">
+            <p className="text-muted-foreground">{t('compare.no_items')}</p>
+            <Link to="/library"><Button className="mt-4 rounded-full" variant="outline">{t('nav.library')}</Button></Link>
+          </div>
+        )}
 
-      {items.length >= 2 && (
-        <div className="mt-8 grid gap-4" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
-          {items.map(item => (
-            <Card key={item.id} className="border-0 shadow-sm">
-              <CardContent className="flex flex-col items-center p-5">
-                <Link to={`/result/${item.id}`} className="text-center">
-                  <p className="mb-4 truncate text-sm font-medium">{item.displayName}</p>
-                </Link>
-                <ScoreGauge score={item.score} zone={item.zone} size={110} />
-                <Badge className={`mt-3 border-0 ${zoneBg[item.zone]}`}>{t(zoneLabel[item.zone])}</Badge>
+        {items.length >= 2 && (
+          <div className="mt-10 grid gap-5" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
+            {items.map((item, i) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <Card className="border-0 shadow-[var(--shadow-card)] hover-lift overflow-hidden h-full">
+                  <CardContent className="flex flex-col items-center p-6">
+                    <Link to={`/result/${item.id}`} className="text-center mb-5">
+                      <p className="text-sm font-bold truncate max-w-full">{item.displayName}</p>
+                    </Link>
+                    <ScoreGauge score={item.score} zone={item.zone} size={110} />
+                    <Badge className={`mt-4 border-0 ${zoneStyles[item.zone]} font-semibold`}>{t(zoneLabel[item.zone])}</Badge>
 
-                <div className="mt-4 w-full space-y-2">
-                  {(['risk', 'return', 'stability'] as const).map(k => (
-                    <div key={k} className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{t(`result.${k}`)}</span>
-                      <span className="font-medium">{item.subScores[k]}</span>
+                    <div className="mt-5 w-full space-y-2.5">
+                      {(['risk', 'return', 'stability'] as const).map(k => (
+                        <div key={k} className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">{t(`result.${k}`)}</span>
+                          <span className="font-bold">{item.subScores[k]}</span>
+                        </div>
+                      ))}
                     </div>
-                  ))}
-                </div>
 
-                <div className="mt-4 w-full">
-                  <p className="mb-1 text-xs font-medium">{t('compare.risks')}</p>
-                  {item.redFlags.slice(0, 2).map((f, i) => (
-                    <p key={i} className="text-xs text-muted-foreground">• {f.title}</p>
-                  ))}
-                  {item.redFlags.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
-                </div>
+                    <div className="mt-5 w-full">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('compare.risks')}</p>
+                      {item.redFlags.slice(0, 2).map((f, i) => (
+                        <p key={i} className="text-xs text-muted-foreground leading-relaxed">• {f.title}</p>
+                      ))}
+                      {item.redFlags.length === 0 && <p className="text-xs text-muted-foreground italic">—</p>}
+                    </div>
 
-                <div className="mt-3 w-full">
-                  <p className="mb-1 text-xs font-medium">{t('compare.upsides')}</p>
-                  {item.reasons.slice(0, 2).map((r, i) => (
-                    <p key={i} className="text-xs text-muted-foreground">• {r.title}</p>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                    <div className="mt-4 w-full">
+                      <p className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('compare.upsides')}</p>
+                      {item.reasons.slice(0, 2).map((r, i) => (
+                        <p key={i} className="text-xs text-muted-foreground leading-relaxed">• {r.title}</p>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
