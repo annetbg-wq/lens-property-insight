@@ -1,141 +1,144 @@
 import { useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
 import { getAllAssessmentsList, deleteAssessment } from '@/lib/storage';
-import { Card, CardContent } from '@/components/ui/card';
+import { MapBackground } from '@/components/MapBackground';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Trash2, ArrowLeftRight, FileText, Activity } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
-import type { AssessmentResult, Goal, Zone } from '@/types/assessment';
+import { Search, Trash2, ArrowLeftRight, BookOpen } from 'lucide-react';
+import type { Goal } from '@/types/assessment';
 
-const zoneColors: Record<Zone, string> = {
-  green: 'bg-score-green',
-  yellow: 'bg-score-amber',
-  red: 'bg-score-red',
+const goalColors: Record<Goal, string> = {
+  rent: 'bg-primary/10 text-primary',
+  buy: 'bg-accent/10 text-accent',
+  invest: 'bg-primary/10 text-primary',
+  business: 'bg-accent/10 text-accent',
 };
 
 export default function Library() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const [items, setItems] = useState(() => getAllAssessmentsList());
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<Goal | 'all'>('all');
-  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [goalFilter, setGoalFilter] = useState<string>('all');
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [rev, forceUpdate] = useState(0);
+
+  const all = useMemo(() => getAllAssessmentsList(), [rev]);
 
   const filtered = useMemo(() => {
-    let list = items;
-    if (filter !== 'all') list = list.filter(i => i.input.goal === filter);
-    if (search.trim()) list = list.filter(i => i.displayName.toLowerCase().includes(search.toLowerCase()));
-    return list;
-  }, [items, search, filter]);
+    let items = all;
+    if (goalFilter !== 'all') items = items.filter(i => i.input.goal === goalFilter);
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      items = items.filter(i => i.displayName.toLowerCase().includes(q));
+    }
+    return items;
+  }, [all, search, goalFilter]);
 
-  const toggle = (id: string) => {
-    setSelected(prev => {
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.size < 3 && next.add(id);
+      next.has(id) ? next.delete(id) : next.add(id);
       return next;
     });
   };
 
   const handleDelete = (id: string) => {
     deleteAssessment(id);
-    setItems(getAllAssessmentsList());
-    setSelected(prev => { const n = new Set(prev); n.delete(id); return n; });
+    forceUpdate(n => n + 1);
   };
 
-  const handleCompare = () => {
-    navigate(`/compare?ids=${Array.from(selected).join(',')}`);
-  };
+  const goals = [
+    { key: 'all', label: t('library.all') },
+    { key: 'rent', label: t('new.goal_rent') },
+    { key: 'buy', label: t('new.goal_buy') },
+    { key: 'invest', label: t('new.goal_invest') },
+    { key: 'business', label: t('new.goal_business') },
+  ];
 
-  const goals: (Goal | 'all')[] = ['all', 'rent', 'buy', 'invest', 'business'];
-  const goalLabels: Record<string, string> = { all: t('library.all'), rent: t('new.goal_rent'), buy: t('new.goal_buy'), invest: t('new.goal_invest'), business: t('new.goal_business') };
-
-  if (items.length === 0) {
+  if (all.length === 0) {
     return (
-      <div className="min-h-[calc(100vh-3.5rem)] terminal-grid flex items-center justify-center">
+      <MapBackground className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center">
         <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center px-4">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary border border-border/50">
-            <FileText className="h-5 w-5 text-muted-foreground/50" />
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-lg glass border border-border/30">
+            <BookOpen className="h-6 w-6 text-muted-foreground/40" />
           </div>
           <h1 className="text-lg font-bold">{t('library.empty')}</h1>
-          <p className="mt-1.5 text-xs text-muted-foreground max-w-xs">{t('library.empty_desc')}</p>
-          <Link to="/new">
-            <Button className="mt-5 rounded-lg gap-1.5 bg-primary text-primary-foreground text-xs h-8">
-              <Activity className="h-3 w-3" /> {t('nav.new')}
-            </Button>
-          </Link>
+          <p className="mt-1.5 text-xs text-muted-foreground max-w-xs mx-auto">{t('library.empty_desc')}</p>
+          <Link to="/new"><Button className="mt-5 rounded-lg gap-2 h-9 text-xs font-bold bg-primary text-primary-foreground">{t('nav.new')}</Button></Link>
         </motion.div>
-      </div>
+      </MapBackground>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] terminal-grid">
-      <div className="mx-auto max-w-2xl px-4 py-10">
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold">{t('library.title')}</h1>
-            <p className="mt-0.5 text-xs text-muted-foreground">{t('library.subtitle')}</p>
+    <MapBackground className="min-h-[calc(100vh-3.5rem)]">
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="flex items-center gap-2 mb-1">
+            <BookOpen className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-mono text-primary uppercase tracking-wider">Database</span>
           </div>
-          {selected.size >= 2 && (
-            <Button size="sm" className="gap-1.5 rounded-lg text-xs h-7 bg-primary text-primary-foreground" onClick={handleCompare}>
-              <ArrowLeftRight className="h-3 w-3" /> {t('library.compare_selected')}
-            </Button>
-          )}
+          <h1 className="text-xl font-bold">{t('library.title')}</h1>
+          <p className="mt-0.5 text-xs text-muted-foreground">{t('library.subtitle')}</p>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="mt-5 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('library.search_placeholder')} className="pl-8 h-8 text-xs bg-secondary/30 border-border/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input value={search} onChange={e => setSearch(e.target.value)} placeholder={t('library.search_placeholder')} className="pl-9 h-9 text-sm bg-secondary/20 border-border/30" />
           </div>
           <div className="flex gap-1">
             {goals.map(g => (
-              <button
-                key={g}
-                onClick={() => setFilter(g)}
-                className={`rounded-md px-2 py-1 text-[10px] font-medium transition-all ${
-                  filter === g
-                    ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'bg-secondary/30 text-muted-foreground border border-transparent hover:border-border/50'
-                }`}
-              >
-                {goalLabels[g]}
+              <button key={g.key} onClick={() => setGoalFilter(g.key)} className={`rounded-lg px-3 py-1.5 text-[10px] font-medium transition-all ${goalFilter === g.key ? 'bg-primary/10 text-primary border border-primary/20' : 'text-muted-foreground hover:text-foreground border border-transparent'}`}>
+                {g.label}
               </button>
             ))}
           </div>
-        </motion.div>
+        </div>
 
-        <div className="mt-5 space-y-1.5">
-          {filtered.length === 0 && <p className="py-10 text-center text-xs text-muted-foreground">{t('library.no_results')}</p>}
-          {filtered.map((item, i) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.02 }}
-            >
-              <Card className="border border-border/50 bg-card/80 hover-lift">
-                <CardContent className="flex items-center gap-3 p-3">
-                  <Checkbox checked={selected.has(item.id)} onCheckedChange={() => toggle(item.id)} />
-                  <div className={`h-2 w-2 shrink-0 rounded-full ${zoneColors[item.zone]}`} />
-                  <Link to={`/result/${item.id}`} className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold">{item.displayName}</p>
-                    <p className="text-[10px] text-muted-foreground font-mono">
-                      {new Date(item.createdAt).toLocaleDateString()} · <span className="font-semibold">{item.score}</span>/100
-                    </p>
+        {selectedIds.size >= 2 && (
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mt-4">
+            <Link to={`/compare?ids=${Array.from(selectedIds).join(',')}`}>
+              <Button size="sm" className="gap-1.5 rounded-lg text-xs h-8 bg-primary text-primary-foreground">
+                <ArrowLeftRight className="h-3 w-3" /> {t('library.compare_selected')} ({selectedIds.size})
+              </Button>
+            </Link>
+          </motion.div>
+        )}
+
+        <div className="mt-6 space-y-2">
+          {filtered.length === 0 && <p className="text-xs text-muted-foreground text-center py-8">{t('library.no_results')}</p>}
+          {filtered.map((item, i) => {
+            const selected = selectedIds.has(item.id);
+            const scoreColor = item.zone === 'green' ? 'score-green' : item.zone === 'yellow' ? 'score-amber' : 'score-red';
+            const borderColor = item.zone === 'green' ? 'border-primary/15' : item.zone === 'yellow' ? 'border-accent/15' : 'border-destructive/15';
+            return (
+              <motion.div key={item.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                className={`glass rounded-lg border ${borderColor} p-4 hover-lift transition-all ${selected ? 'ring-1 ring-primary/30' : ''}`}>
+                <div className="flex items-center gap-4">
+                  <button onClick={() => toggleSelect(item.id)} className={`h-4 w-4 shrink-0 rounded border transition-all ${selected ? 'bg-primary border-primary' : 'border-border/50'}`} />
+                  <Link to={`/result/${item.id}`} className="flex-1 min-w-0 hover:text-primary transition-colors">
+                    <p className="text-sm font-semibold truncate">{item.displayName}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <Badge className={`text-[9px] h-4 px-1.5 border-0 rounded font-mono ${goalColors[item.input.goal]}`}>{item.input.goal}</Badge>
+                      <span className="text-[9px] text-muted-foreground font-mono">{new Date(item.createdAt).toLocaleDateString()}</span>
+                    </div>
                   </Link>
-                  <Button variant="ghost" size="icon" className="shrink-0 h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => handleDelete(item.id)}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <div className="text-right">
+                    <span className={`text-xl font-bold font-mono ${scoreColor}`}>{item.score}</span>
+                    <p className="text-[8px] text-muted-foreground font-mono">/100</p>
+                  </div>
+                  <button onClick={() => handleDelete(item.id)} className="shrink-0 h-7 w-7 flex items-center justify-center rounded-md hover:bg-destructive/10 transition-colors">
+                    <Trash2 className="h-3 w-3 text-muted-foreground hover:text-destructive transition-colors" />
+                  </button>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
-    </div>
+    </MapBackground>
   );
 }

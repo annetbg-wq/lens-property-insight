@@ -1,48 +1,66 @@
 import { useTranslation } from '@/lib/i18n';
-import { Card, CardContent } from '@/components/ui/card';
-import { Shield, Lightbulb, Workflow, Globe } from 'lucide-react';
+import { MapBackground } from '@/components/MapBackground';
+import { Shield, Activity, Layers, Radar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function About() {
   const { t } = useTranslation();
 
   const sections = [
-    { icon: Lightbulb, title: t('about.what_title'), desc: t('about.what_desc') },
-    { icon: Workflow, title: t('about.how_title'), desc: t('about.how_desc') },
-    { icon: Shield, title: t('about.trust_title'), desc: t('about.disclaimer') },
+    { icon: Activity, title: t('about.what_title'), text: t('about.what_desc') },
+    { icon: Radar, title: t('about.how_title'), text: t('about.how_desc') },
+    { icon: Shield, title: t('about.trust_title'), text: t('about.disclaimer') },
   ];
 
   return (
-    <div className="min-h-[calc(100vh-3.5rem)] terminal-grid">
-      <div className="mx-auto max-w-xl px-4 py-12 md:py-20">
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="inline-flex items-center gap-1.5 rounded-lg bg-primary/5 border border-primary/20 px-3 py-1 text-[10px] font-mono text-primary mb-3">
-            <Globe className="h-3 w-3" /> About
+    <MapBackground className="min-h-[calc(100vh-3.5rem)]">
+      <div className="mx-auto max-w-2xl px-4 py-10 md:py-16">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="flex items-center gap-2 mb-2">
+            <Radar className="h-3.5 w-3.5 text-primary" />
+            <span className="text-[10px] font-mono text-primary uppercase tracking-wider">System Info</span>
           </div>
-          <h1 className="text-2xl font-bold md:text-4xl">{t('about.title')}</h1>
+          <h1 className="text-2xl font-bold md:text-3xl">{t('about.title')}</h1>
         </motion.div>
 
-        <div className="space-y-3">
+        <div className="mt-10 space-y-4">
           {sections.map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.08 }}
-            >
-              <Card className="border border-border/50 bg-card/80 hover-lift">
-                <CardContent className="p-5">
-                  <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
-                    <s.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <h2 className="text-sm font-bold">{s.title}</h2>
-                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{s.desc}</p>
-                </CardContent>
-              </Card>
+            <motion.div key={i} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
+              className="glass rounded-lg border border-border/30 p-6">
+              <div className="flex items-center gap-2.5 mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 border border-primary/20">
+                  <s.icon className="h-4 w-4 text-primary" />
+                </div>
+                <h2 className="text-base font-bold">{s.title}</h2>
+              </div>
+              <p className="text-sm text-muted-foreground leading-relaxed">{s.text}</p>
             </motion.div>
           ))}
         </div>
+
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}
+          className="mt-8 glass rounded-lg border border-border/30 p-6">
+          <div className="flex items-center gap-2.5 mb-4">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent/10 border border-accent/20">
+              <Layers className="h-4 w-4 text-accent" />
+            </div>
+            <h2 className="text-base font-bold">Intelligence Layers</h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {[
+              { label: 'Cadastral', desc: 'Границы участков, размеры, сервитуты' },
+              { label: 'Zoning & FAR', desc: 'Что можно строить, ограничения высоты' },
+              { label: 'Environment', desc: 'Шум, качество воздуха, зоны подтопления' },
+              { label: 'Infrastructure', desc: 'Транспорт, школы, строящиеся объекты' },
+            ].map((layer, i) => (
+              <div key={i} className="rounded-md bg-secondary/20 border border-border/20 p-3">
+                <p className="text-[10px] font-mono text-primary uppercase tracking-wider mb-0.5">{layer.label}</p>
+                <p className="text-xs text-muted-foreground">{layer.desc}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </MapBackground>
   );
 }
