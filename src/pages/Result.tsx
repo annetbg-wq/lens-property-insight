@@ -77,6 +77,15 @@ export default function Result() {
           <FlashVerdictCard result={result} />
         </div>
 
+        {/* Property Map */}
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-5">
+          <PropertyMap
+            latitude={result.input.latitude}
+            longitude={result.input.longitude}
+            address={result.input.address}
+          />
+        </motion.div>
+
         {/* Actions */}
         <motion.div
           variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.3 }}
