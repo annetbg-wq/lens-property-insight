@@ -213,21 +213,21 @@
   .viewfinder::after {
     content: '';
     position: absolute;
-    width: 24px;
-    height: 24px;
-    border-color: hsl(160 84% 39% / 0.5);
+    width: 16px;
+    height: 16px;
+    border-color: hsl(160 84% 39% / 0.3);
     pointer-events: none;
-    z-index: 10;
+    z-index: 1;
   }
   .viewfinder::before {
     top: 0; left: 0;
-    border-top: 2px solid;
-    border-left: 2px solid;
+    border-top: 1px solid;
+    border-left: 1px solid;
   }
   .viewfinder::after {
     top: 0; right: 0;
-    border-top: 2px solid;
-    border-right: 2px solid;
+    border-top: 1px solid;
+    border-right: 1px solid;
   }
   .viewfinder-bottom {
     position: relative;
@@ -236,21 +236,43 @@
   .viewfinder-bottom::after {
     content: '';
     position: absolute;
-    width: 24px;
-    height: 24px;
-    border-color: hsl(160 84% 39% / 0.5);
+    width: 16px;
+    height: 16px;
+    border-color: hsl(160 84% 39% / 0.3);
     pointer-events: none;
-    z-index: 10;
+    z-index: 1;
   }
   .viewfinder-bottom::before {
     bottom: 0; left: 0;
-    border-bottom: 2px solid;
-    border-left: 2px solid;
+    border-bottom: 1px solid;
+    border-left: 1px solid;
   }
   .viewfinder-bottom::after {
     bottom: 0; right: 0;
-    border-bottom: 2px solid;
-    border-right: 2px solid;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+  }
+
+  /* Client mode: hide decorative overlays */
+  .client-mode .viewfinder::before,
+  .client-mode .viewfinder::after,
+  .client-mode .viewfinder-bottom::before,
+  .client-mode .viewfinder-bottom::after {
+    display: none;
+  }
+  .client-mode .topo-grid,
+  .client-mode .cadastral-grid,
+  .client-mode .terminal-grid,
+  .client-mode .dot-grid,
+  .client-mode .mesh-gradient,
+  .client-mode .scanline::after {
+    opacity: 0 !important;
+  }
+  .client-mode .gradient-text {
+    background: linear-gradient(135deg, hsl(160 65% 35%), hsl(160 65% 50%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   /* Mesh gradient */
