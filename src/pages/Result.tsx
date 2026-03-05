@@ -3,6 +3,7 @@ import { useTranslation } from '@/lib/i18n';
 import { getAssessment, saveAssessment } from '@/lib/storage';
 import { FlashVerdictCard } from '@/components/FlashVerdictCard';
 import { EvidenceSection } from '@/components/EvidenceSection';
+import { PropertyMap } from '@/components/PropertyMap';
 import { MapBackground } from '@/components/MapBackground';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -75,6 +76,15 @@ export default function Result() {
         <div className="mt-8">
           <FlashVerdictCard result={result} />
         </div>
+
+        {/* Property Map */}
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" transition={{ delay: 0.2 }} className="mt-5">
+          <PropertyMap
+            latitude={result.input.latitude}
+            longitude={result.input.longitude}
+            address={result.input.address}
+          />
+        </motion.div>
 
         {/* Actions */}
         <motion.div
