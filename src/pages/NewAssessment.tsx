@@ -7,15 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { AnalyzingAnimation } from '@/components/AnalyzingAnimation';
 import { generateAssessment } from '@/lib/mockGenerator';
 import { saveAssessment } from '@/lib/storage';
 import { getDemoInput } from '@/lib/demoCases';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import type { AssessmentInput, Goal, InputMethod } from '@/types/assessment';
-import { MapPin, Camera, Link as LinkIcon, PenLine, Sparkles, Crosshair, Loader2, Info } from 'lucide-react';
+import { MapPin, Camera, Link as LinkIcon, PenLine, Activity, Crosshair, Loader2, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function NewAssessment() {
@@ -34,7 +32,6 @@ export default function NewAssessment() {
   const [goal, setGoal] = useState<Goal>('buy');
   const [geoDetected, setGeoDetected] = useState(false);
 
-  // Auto-detect GPS on mount
   useEffect(() => {
     if (!geoDetected && navigator.geolocation) {
       geo.detect();
@@ -42,7 +39,6 @@ export default function NewAssessment() {
     }
   }, []);
 
-  // Pre-fill coordinates when detected
   useEffect(() => {
     if (geo.latitude !== null && geo.longitude !== null) {
       if (!lat && !lng) {
@@ -113,107 +109,107 @@ export default function NewAssessment() {
   ];
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] mesh-gradient">
-      <div className="mx-auto max-w-2xl px-4 py-12 md:py-20">
+    <div className="min-h-[calc(100vh-3.5rem)] terminal-grid">
+      <div className="mx-auto max-w-xl px-4 py-10 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-10"
+          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
+          className="text-center mb-8"
         >
-          <h1 className="text-3xl font-black md:text-4xl font-display">{t('new.title')}</h1>
-          <p className="mt-3 text-muted-foreground text-lg">{t('new.subtitle')}</p>
+          <h1 className="text-2xl font-bold md:text-3xl">{t('new.title')}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t('new.subtitle')}</p>
         </motion.div>
 
-        {/* Location detection banner */}
+        {/* GPS banner */}
         {geo.latitude !== null && (
           <motion.div
             initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}
-            className="mb-6"
+            className="mb-5"
           >
-            <div className="flex items-center gap-3 rounded-2xl bg-accent/5 border border-accent/20 px-4 py-3">
-              <Crosshair className="h-4 w-4 text-accent shrink-0" />
+            <div className="flex items-center gap-2.5 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2">
+              <Crosshair className="h-3.5 w-3.5 text-primary shrink-0" />
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-accent">📍 Location detected</p>
-                <p className="text-xs text-muted-foreground">
-                  {geo.latitude?.toFixed(4)}, {geo.longitude?.toFixed(4)} — auto-enriching results
+                <p className="text-xs font-medium text-primary">📍 {t('new.location_detected')}</p>
+                <p className="text-[10px] text-muted-foreground font-mono">
+                  {geo.latitude?.toFixed(4)}, {geo.longitude?.toFixed(4)}
                 </p>
               </div>
             </div>
           </motion.div>
         )}
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border-0 shadow-[var(--shadow-card)] overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+          <Card className="border border-border/50 bg-card/80 overflow-hidden">
             <CardContent className="p-0">
               <Tabs value={method} onValueChange={v => setMethod(v as InputMethod)}>
-                <div className="border-b bg-muted/30 px-6 pt-6">
-                  <TabsList className="grid w-full grid-cols-4 bg-muted/50 p-1">
+                <div className="border-b border-border/50 px-4 pt-4">
+                  <TabsList className="grid w-full grid-cols-4 bg-secondary/30 p-0.5 h-8">
                     {tabItems.map(tab => (
-                      <TabsTrigger key={tab.value} value={tab.value} className="gap-1.5 text-xs data-[state=active]:shadow-sm">
-                        <tab.icon className="h-3.5 w-3.5" /><span className="hidden sm:inline">{tab.label}</span>
+                      <TabsTrigger key={tab.value} value={tab.value} className="gap-1 text-[11px] h-7 rounded-md data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-none">
+                        <tab.icon className="h-3 w-3" /><span className="hidden sm:inline">{tab.label}</span>
                       </TabsTrigger>
                     ))}
                   </TabsList>
                 </div>
 
-                <div className="p-6 space-y-5">
-                  <TabsContent value="address" className="mt-0 space-y-4">
+                <div className="p-4 space-y-4">
+                  <TabsContent value="address" className="mt-0 space-y-3">
                     <div>
-                      <Label className="text-sm font-semibold">{t('new.tab_address')}</Label>
-                      <Input value={address} onChange={e => setAddress(e.target.value)} placeholder={t('new.address_placeholder')} className="mt-2 h-12 text-base" />
+                      <Label className="text-xs font-semibold">{t('new.tab_address')}</Label>
+                      <Input value={address} onChange={e => setAddress(e.target.value)} placeholder={t('new.address_placeholder')} className="mt-1.5 h-10 text-sm bg-secondary/30 border-border/50" />
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="photo" className="mt-0 space-y-4">
-                    <div className="flex h-40 items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/20 hover:bg-muted/40 transition-colors cursor-pointer">
+                  <TabsContent value="photo" className="mt-0 space-y-3">
+                    <div className="flex h-32 items-center justify-center rounded-lg border border-dashed border-border/50 bg-secondary/20 hover:bg-secondary/30 transition-colors cursor-pointer">
                       <div className="text-center">
-                        <Camera className="mx-auto mb-3 h-8 w-8 text-muted-foreground/60" />
-                        <p className="text-sm font-medium text-muted-foreground">{t('new.photo_desc')}</p>
-                        <p className="text-xs text-muted-foreground/60 mt-1">JPG, PNG up to 10MB</p>
+                        <Camera className="mx-auto mb-2 h-6 w-6 text-muted-foreground/50" />
+                        <p className="text-xs font-medium text-muted-foreground">{t('new.photo_desc')}</p>
+                        <p className="text-[10px] text-muted-foreground/50 mt-0.5">JPG, PNG до 10MB</p>
                       </div>
                     </div>
                   </TabsContent>
 
-                  <TabsContent value="coordinates" className="mt-0 space-y-4">
-                    <div className="grid grid-cols-2 gap-3">
+                  <TabsContent value="coordinates" className="mt-0 space-y-3">
+                    <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <Label className="text-sm font-semibold">Latitude</Label>
-                        <Input value={lat} onChange={e => setLat(e.target.value)} placeholder={t('new.lat_placeholder')} className="mt-2 h-12" />
+                        <Label className="text-xs font-semibold font-mono">LAT</Label>
+                        <Input value={lat} onChange={e => setLat(e.target.value)} placeholder={t('new.lat_placeholder')} className="mt-1.5 h-10 font-mono text-sm bg-secondary/30 border-border/50" />
                       </div>
                       <div>
-                        <Label className="text-sm font-semibold">Longitude</Label>
-                        <Input value={lng} onChange={e => setLng(e.target.value)} placeholder={t('new.lng_placeholder')} className="mt-2 h-12" />
+                        <Label className="text-xs font-semibold font-mono">LNG</Label>
+                        <Input value={lng} onChange={e => setLng(e.target.value)} placeholder={t('new.lng_placeholder')} className="mt-1.5 h-10 font-mono text-sm bg-secondary/30 border-border/50" />
                       </div>
                     </div>
                     <Button
                       variant="outline" size="sm"
-                      className="gap-1.5 rounded-full"
+                      className="gap-1.5 rounded-lg text-xs h-7 border-border/50"
                       onClick={() => geo.detect()}
                       disabled={geo.loading}
                     >
-                      {geo.loading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-3.5 w-3.5" />}
-                      {geo.loading ? 'Detecting...' : 'Use My Location'}
+                      {geo.loading ? <Loader2 className="h-3 w-3 animate-spin" /> : <Crosshair className="h-3 w-3" />}
+                      {geo.loading ? t('new.detecting') : t('new.use_location')}
                     </Button>
                   </TabsContent>
 
-                  <TabsContent value="url" className="mt-0 space-y-4">
+                  <TabsContent value="url" className="mt-0 space-y-3">
                     <div>
-                      <Label className="text-sm font-semibold">{t('new.tab_url')}</Label>
-                      <Input value={url} onChange={e => setUrl(e.target.value)} placeholder={t('new.url_placeholder')} className="mt-2 h-12 text-base" />
+                      <Label className="text-xs font-semibold">{t('new.tab_url')}</Label>
+                      <Input value={url} onChange={e => setUrl(e.target.value)} placeholder={t('new.url_placeholder')} className="mt-1.5 h-10 text-sm font-mono bg-secondary/30 border-border/50" />
                     </div>
                   </TabsContent>
 
                   {/* Goal */}
                   <div>
-                    <Label className="text-sm font-semibold">{t('new.goal_label')}</Label>
-                    <div className="mt-2 grid grid-cols-4 gap-2">
+                    <Label className="text-xs font-semibold">{t('new.goal_label')}</Label>
+                    <div className="mt-1.5 grid grid-cols-4 gap-1.5">
                       {(['rent', 'buy', 'invest', 'business'] as Goal[]).map(g => (
                         <button
                           key={g}
                           onClick={() => setGoal(g)}
-                          className={`rounded-xl border-2 px-3 py-2.5 text-sm font-medium transition-all ${
+                          className={`rounded-lg border px-2 py-2 text-xs font-medium transition-all ${
                             goal === g
-                              ? 'border-primary bg-primary/5 text-primary'
-                              : 'border-border hover:border-primary/30 text-muted-foreground'
+                              ? 'border-primary/40 bg-primary/10 text-primary'
+                              : 'border-border/50 hover:border-primary/20 text-muted-foreground'
                           }`}
                         >
                           {t(`new.goal_${g}`)}
@@ -224,16 +220,16 @@ export default function NewAssessment() {
 
                   {/* Notes */}
                   <div>
-                    <Label className="text-sm font-semibold">{t('new.notes_label')}</Label>
-                    <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={t('new.notes_placeholder')} className="mt-2 resize-none" rows={3} />
+                    <Label className="text-xs font-semibold">{t('new.notes_label')}</Label>
+                    <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder={t('new.notes_placeholder')} className="mt-1.5 resize-none text-sm bg-secondary/30 border-border/50" rows={2} />
                   </div>
 
                   <Button
                     onClick={handleAnalyze} disabled={!canAnalyze()}
-                    className="w-full gap-2.5 rounded-full h-14 text-base shadow-xl shadow-primary/20 bg-primary hover:bg-primary/90"
+                    className="w-full gap-2 rounded-lg h-11 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground glow-green"
                     size="lg"
                   >
-                    <Sparkles className="h-4 w-4" /> {t('new.analyze')}
+                    <Activity className="h-3.5 w-3.5" /> {t('new.analyze')}
                   </Button>
                 </div>
               </Tabs>
@@ -243,22 +239,22 @@ export default function NewAssessment() {
 
         {/* Demo cases */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-          className="mt-10"
+          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}
+          className="mt-8"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <Info className="h-4 w-4 text-muted-foreground" />
-            <p className="text-sm font-medium text-muted-foreground">{t('new.load_demo')}</p>
+          <div className="flex items-center gap-1.5 mb-3">
+            <Info className="h-3 w-3 text-muted-foreground" />
+            <p className="text-[11px] font-medium text-muted-foreground">{t('new.load_demo')}</p>
           </div>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
+          <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-6">
             {demos.map(d => (
               <button
                 key={d.key}
                 onClick={() => loadDemo(d.key)}
-                className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-card p-3 transition-all hover:border-primary/30 hover:shadow-sm hover:-translate-y-0.5"
+                className="flex flex-col items-center gap-1 rounded-lg border border-border/50 bg-card/50 p-2.5 transition-all hover:border-primary/20 hover:bg-primary/5"
               >
-                <span className="text-xl">{d.emoji}</span>
-                <span className="text-[11px] font-medium text-muted-foreground">{d.label}</span>
+                <span className="text-base">{d.emoji}</span>
+                <span className="text-[10px] font-medium text-muted-foreground">{d.label}</span>
               </button>
             ))}
           </div>

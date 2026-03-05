@@ -15,9 +15,7 @@ const LANG_KEY = 'propa_lang';
 function getInitialLanguage(): Language {
   const stored = localStorage.getItem(LANG_KEY);
   if (stored && stored in translations) return stored as Language;
-  const browserLang = navigator.language.slice(0, 2);
-  const match = LANGUAGES.find(l => l.code === browserLang);
-  return match ? match.code : 'en';
+  return 'ru';
 }
 
 interface I18nProviderProps {

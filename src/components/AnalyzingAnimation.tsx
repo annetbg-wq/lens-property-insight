@@ -36,30 +36,32 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background mesh-gradient"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background terminal-grid"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
     >
-      {/* Animated orb */}
-      <div className="relative mb-10">
+      {/* Scanning ring */}
+      <div className="relative mb-12">
         <motion.div
-          className="h-28 w-28 rounded-full"
-          style={{ background: 'var(--gradient-primary)', filter: 'blur(0px)' }}
-          animate={{
-            scale: [1, 1.15, 1],
-            rotate: [0, 180, 360],
-          }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          className="h-24 w-24 rounded-full border-2 border-primary/30"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
         />
         <motion.div
-          className="absolute inset-0 rounded-full opacity-40"
-          style={{ background: 'var(--gradient-primary)' }}
-          animate={{ scale: [1, 1.8, 1] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute inset-0 rounded-full border-t-2 border-primary"
+          animate={{ rotate: [0, 360] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="h-3 w-3 rounded-full bg-primary animate-pulse-slow" />
+        </div>
+        <div
+          className="absolute inset-0 rounded-full blur-xl opacity-20"
+          style={{ background: 'radial-gradient(hsl(160 84% 39%), transparent)' }}
         />
       </div>
 
       <motion.h2
-        className="text-2xl font-bold font-display mb-2"
+        className="text-lg font-semibold mb-1 text-foreground"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -68,24 +70,24 @@ export function AnalyzingAnimation({ onComplete }: AnalyzingAnimationProps) {
       </motion.h2>
 
       {/* Progress bar */}
-      <div className="w-64 h-1 rounded-full bg-muted overflow-hidden mt-4 mb-6">
+      <div className="w-48 h-0.5 rounded-full bg-secondary overflow-hidden mt-4 mb-8">
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: 'var(--gradient-primary)', width: `${progress}%` }}
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${progress}%` }}
         />
       </div>
 
-      <div className="flex flex-col items-center gap-2.5">
+      <div className="flex flex-col items-start gap-2">
         {STEPS.map((s, i) => (
           <motion.div
             key={s}
             className="flex items-center gap-2.5"
             initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: i <= step ? 1 : 0.25, x: 0 }}
+            animate={{ opacity: i <= step ? 1 : 0.2, x: 0 }}
             transition={{ duration: 0.4, delay: i * 0.1 }}
           >
-            <div className={`h-2 w-2 rounded-full transition-colors ${i <= step ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
-            <p className={`text-sm transition-colors ${i <= step ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
+            <div className={`h-1.5 w-1.5 rounded-full transition-colors ${i <= step ? 'bg-primary' : 'bg-muted-foreground/30'}`} />
+            <p className={`text-xs font-mono transition-colors ${i <= step ? 'text-foreground' : 'text-muted-foreground/50'}`}>
               {t(s)}
             </p>
           </motion.div>

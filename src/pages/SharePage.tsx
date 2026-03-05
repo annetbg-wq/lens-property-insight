@@ -6,15 +6,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Phone, Mail, Building2, CheckCircle2, AlertTriangle, Sparkles, CalendarDays } from 'lucide-react';
+import { Shield, Phone, Mail, Building2, CheckCircle2, AlertTriangle, Activity, CalendarDays } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { AssessmentResult, AgentInfo, Zone } from '@/types/assessment';
 
 const zoneStyles: Record<Zone, { bg: string; text: string }> = {
-  green: { bg: 'bg-accent/10', text: 'text-accent' },
-  yellow: { bg: 'bg-amber-500/10', text: 'text-amber-600 dark:text-amber-400' },
-  red: { bg: 'bg-destructive/10', text: 'text-destructive' },
+  green: { bg: 'bg-primary/10', text: 'score-green' },
+  yellow: { bg: 'bg-accent/10', text: 'score-amber' },
+  red: { bg: 'bg-destructive/10', text: 'score-red' },
 };
 
 export default function SharePage() {
@@ -33,7 +33,7 @@ export default function SharePage() {
 
   if (!result) return (
     <div className="flex min-h-[60vh] items-center justify-center">
-      <Sparkles className="h-8 w-8 text-muted-foreground/40 animate-pulse" />
+      <Activity className="h-6 w-6 text-muted-foreground/30 animate-pulse" />
     </div>
   );
 
@@ -41,99 +41,99 @@ export default function SharePage() {
   const zoneLabel = result.zone === 'green' ? t('result.green') : result.zone === 'yellow' ? t('result.yellow') : t('result.red');
 
   return (
-    <div className="min-h-screen mesh-gradient">
-      <div className="mx-auto max-w-2xl px-4 py-12 md:py-20">
+    <div className="min-h-screen terminal-grid">
+      <div className="mx-auto max-w-xl px-4 py-10 md:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
-          <p className="text-sm font-semibold text-primary uppercase tracking-widest">{t('share.assessment_by')}</p>
-          <h1 className="mt-3 text-2xl font-black md:text-3xl font-display">{result.displayName}</h1>
+          <p className="text-[10px] font-semibold text-primary uppercase tracking-widest font-mono">{t('share.assessment_by')}</p>
+          <h1 className="mt-2 text-xl font-bold md:text-2xl">{result.displayName}</h1>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="mt-10 flex flex-col items-center gap-4"
+          className="mt-8 flex flex-col items-center gap-3"
         >
-          <ScoreGauge score={result.score} zone={result.zone} size={160} />
-          <Badge className={`${zone.bg} ${zone.text} border-0 px-5 py-1.5 text-sm font-semibold`}>{zoneLabel}</Badge>
+          <ScoreGauge score={result.score} zone={result.zone} size={140} />
+          <Badge className={`${zone.bg} ${zone.text} border-0 px-4 py-1 text-xs font-semibold font-mono`}>{zoneLabel}</Badge>
         </motion.div>
 
-        <div className="mt-8 grid grid-cols-3 gap-3">
+        <div className="mt-6 grid grid-cols-3 gap-2">
           {(['risk', 'return', 'stability'] as const).map(k => (
-            <Card key={k} className="border-0 shadow-[var(--shadow-card)]">
-              <CardContent className="p-4 text-center">
-                <p className="text-2xl font-black font-display">{result.subScores[k]}</p>
-                <p className="text-xs font-medium text-muted-foreground">{t(`result.${k}`)}</p>
+            <Card key={k} className="border border-border/50 bg-card/80">
+              <CardContent className="p-3 text-center">
+                <p className="text-lg font-bold font-mono">{result.subScores[k]}</p>
+                <p className="text-[10px] font-medium text-muted-foreground">{t(`result.${k}`)}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <Separator className="my-10" />
+        <Separator className="my-8 bg-border/30" />
 
-        <p className="text-sm text-muted-foreground leading-relaxed">{result.agentContent.clientSummary}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{result.agentContent.clientSummary}</p>
 
         {result.redFlags.length > 0 && (
-          <div className="mt-8">
-            <h3 className="mb-3 flex items-center gap-2 font-bold font-display">
-              <AlertTriangle className="h-4 w-4 text-destructive" />{t('result.red_flags')}
+          <div className="mt-6">
+            <h3 className="mb-2 flex items-center gap-1.5 text-sm font-bold">
+              <AlertTriangle className="h-3.5 w-3.5 text-destructive" />{t('result.red_flags')}
             </h3>
             {result.redFlags.slice(0, 2).map((f, i) => (
-              <p key={i} className="mb-1.5 text-sm text-muted-foreground flex items-start gap-2">
-                <span className="text-destructive mt-1">•</span> {f.title}
+              <p key={i} className="mb-1 text-xs text-muted-foreground flex items-start gap-1.5">
+                <span className="text-destructive mt-0.5">•</span> {f.title}
               </p>
             ))}
           </div>
         )}
 
-        <div className="mt-8">
-          <h3 className="mb-3 flex items-center gap-2 font-bold font-display">
-            <CheckCircle2 className="h-4 w-4 text-primary" />{t('result.next_steps')}
+        <div className="mt-6">
+          <h3 className="mb-2 flex items-center gap-1.5 text-sm font-bold">
+            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />{t('result.next_steps')}
           </h3>
           {result.nextSteps.slice(0, 3).map((s, i) => (
-            <p key={i} className="mb-1.5 text-sm text-muted-foreground flex items-start gap-2">
-              <span className="text-primary mt-1">•</span> {s.title}
+            <p key={i} className="mb-1 text-xs text-muted-foreground flex items-start gap-1.5">
+              <span className="text-primary mt-0.5">•</span> {s.title}
             </p>
           ))}
         </div>
 
         {agent && (
           <>
-            <Separator className="my-10" />
-            <Card className="border-0 shadow-[var(--shadow-card)] overflow-hidden">
-              <CardContent className="p-6">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">{t('share.presented_by')}</p>
-                <p className="text-lg font-bold">{agent.name}</p>
+            <Separator className="my-8 bg-border/30" />
+            <Card className="border border-border/50 bg-card/80 overflow-hidden">
+              <CardContent className="p-5">
+                <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider font-mono mb-2">{t('share.presented_by')}</p>
+                <p className="text-sm font-bold">{agent.name}</p>
                 {agent.company && (
-                  <p className="flex items-center gap-1.5 text-sm text-muted-foreground mt-1">
-                    <Building2 className="h-3.5 w-3.5" />{agent.company}
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                    <Building2 className="h-3 w-3" />{agent.company}
                   </p>
                 )}
-                <div className="mt-4 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {agent.phone && (
-                    <Button variant="outline" size="sm" className="gap-1.5 rounded-full">
-                      <Phone className="h-3.5 w-3.5" />{agent.phone}
+                    <Button variant="outline" size="sm" className="gap-1.5 rounded-lg text-xs h-7 border-border/50">
+                      <Phone className="h-3 w-3" />{agent.phone}
                     </Button>
                   )}
                   {agent.email && (
-                    <Button variant="outline" size="sm" className="gap-1.5 rounded-full">
-                      <Mail className="h-3.5 w-3.5" />{agent.email}
+                    <Button variant="outline" size="sm" className="gap-1.5 rounded-lg text-xs h-7 border-border/50">
+                      <Mail className="h-3 w-3" />{agent.email}
                     </Button>
                   )}
                 </div>
-                <Button className="mt-5 w-full rounded-full gap-2 h-12 shadow-lg shadow-primary/20" size="lg">
-                  <CalendarDays className="h-4 w-4" /> {t('share.request_tour')}
+                <Button className="mt-4 w-full rounded-lg gap-2 h-10 bg-primary text-primary-foreground glow-green" size="lg">
+                  <CalendarDays className="h-3.5 w-3.5" /> {t('share.request_tour')}
                 </Button>
               </CardContent>
             </Card>
           </>
         )}
 
-        <div className="mt-10 flex items-start gap-3 rounded-2xl bg-muted/30 p-5">
-          <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
-          <p className="text-xs text-muted-foreground leading-relaxed">{t('about.disclaimer')}</p>
+        <div className="mt-8 flex items-start gap-2.5 rounded-lg bg-secondary/30 border border-border/30 p-3.5">
+          <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          <p className="text-[10px] text-muted-foreground leading-relaxed">{t('about.disclaimer')}</p>
         </div>
       </div>
     </div>

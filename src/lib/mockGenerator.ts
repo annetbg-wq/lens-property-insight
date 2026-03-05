@@ -30,64 +30,64 @@ function pickN<T>(arr: T[], n: number, rng: () => number): T[] {
 }
 
 const REASON_POOL: Omit<Reason, 'evidence'>[] = [
-  { title: "Strong Location Fundamentals", description: "The property is situated in an area with above-average infrastructure, transit access, and amenities density." },
-  { title: "Favorable Market Dynamics", description: "Local market indicators suggest sustained demand with limited new supply in the pipeline." },
-  { title: "Rental Yield Potential", description: "Comparable rental rates in the area indicate attractive cash-flow potential relative to acquisition cost." },
-  { title: "Development Upside", description: "Zoning and planning conditions allow for potential value-add through renovation or expansion." },
-  { title: "Aging Infrastructure Risk", description: "Building systems and structural elements show signs of deferred maintenance that may require capital expenditure." },
-  { title: "Regulatory Complexity", description: "Local regulations, permits, or zoning restrictions add layers of complexity to the investment thesis." },
-  { title: "Price-to-Value Alignment", description: "The asking price is within range of comparable transactions, indicating fair market positioning." },
-  { title: "Neighborhood Trajectory", description: "The neighborhood is showing early signs of positive demographic and commercial shifts." },
-  { title: "Liquidity Concerns", description: "The property type and location may present challenges for resale within a typical investment horizon." },
-  { title: "Cash Flow Stability", description: "Historical occupancy rates and lease structures suggest predictable income generation." },
+  { title: "Сильные локационные фундаменталы", description: "Объект расположен в районе с развитой инфраструктурой, хорошей транспортной доступностью и высокой плотностью сервисов." },
+  { title: "Благоприятная рыночная динамика", description: "Индикаторы локального рынка указывают на устойчивый спрос при ограниченном новом предложении в стадии строительства." },
+  { title: "Потенциал арендной доходности", description: "Сопоставимые арендные ставки в районе показывают привлекательный cash-flow относительно стоимости приобретения." },
+  { title: "Потенциал девелопмента", description: "Зонирование и градостроительные условия допускают повышение стоимости через реновацию или расширение." },
+  { title: "Риск устаревшей инфраструктуры", description: "Инженерные системы и конструктивные элементы показывают признаки отложенного обслуживания, что может потребовать капитальных вложений." },
+  { title: "Регуляторная сложность", description: "Местные нормативные акты, разрешения или ограничения зонирования добавляют уровни сложности к инвестиционному тезису." },
+  { title: "Соответствие цены и ценности", description: "Запрашиваемая цена находится в диапазоне сопоставимых сделок, что указывает на справедливое рыночное позиционирование." },
+  { title: "Траектория района", description: "Район демонстрирует ранние признаки позитивных демографических и коммерческих сдвигов." },
+  { title: "Проблемы ликвидности", description: "Тип объекта и локация могут создать сложности при перепродаже в рамках типичного инвестиционного горизонта." },
+  { title: "Стабильность денежного потока", description: "Исторические показатели заполняемости и условия аренды указывают на предсказуемую генерацию дохода." },
 ];
 
 const EVIDENCE_POOL: Omit<EvidenceCard, 'isExample'>[] = [
-  { title: "Median Price Trend", description: "Median sale prices in the area have increased 12% over the past 24 months." },
-  { title: "Transit Score", description: "Property is within 500m of a major transit hub with daily ridership of 45,000+." },
-  { title: "Vacancy Rate", description: "Local vacancy rate stands at 3.2%, well below the metropolitan average of 5.8%." },
-  { title: "Rental Comparable", description: "Similar units in the building achieve $2,400/month, suggesting a 5.2% gross yield." },
-  { title: "Population Growth", description: "The postal code has seen 8% population growth in the last 5 years." },
-  { title: "Construction Pipeline", description: "2,300 new units are planned within 2km, potentially increasing supply by 15%." },
-  { title: "Crime Index", description: "Area crime index is 22% below the city average, supporting property value stability." },
-  { title: "School Rating", description: "Nearest schools rate 8/10 on average, a key driver for family-oriented demand." },
-  { title: "Environmental Risk", description: "The area has a moderate flood risk rating, which may affect insurance premiums." },
-  { title: "Employment Hub", description: "Within 3km of a major employment center with 15,000+ jobs." },
-  { title: "Building Age", description: "The structure was built in 1985 with no major renovations recorded since 2005." },
-  { title: "Price per sqft", description: "At $285/sqft, the property is 8% below the neighborhood median of $310/sqft." },
+  { title: "Тренд медианной цены", description: "Медианные цены продаж в районе выросли на 12% за последние 24 месяца." },
+  { title: "Транспортный рейтинг", description: "Объект находится в 500м от крупного транспортного узла с ежедневным пассажиропотоком 45 000+." },
+  { title: "Уровень вакантности", description: "Местный уровень вакантности составляет 3.2%, что значительно ниже среднего по городу 5.8%." },
+  { title: "Арендный аналог", description: "Аналогичные юниты в доме сдаются за ₽180 000/мес, что даёт валовую доходность 5.2%." },
+  { title: "Рост населения", description: "В почтовом индексе зафиксирован рост населения на 8% за последние 5 лет." },
+  { title: "Строительный пайплайн", description: "В радиусе 2 км запланировано 2 300 новых юнитов, что может увеличить предложение на 15%." },
+  { title: "Индекс криминогенности", description: "Индекс преступности в районе на 22% ниже среднегородского, что поддерживает стабильность стоимости." },
+  { title: "Рейтинг школ", description: "Ближайшие школы имеют средний рейтинг 8/10, что является ключевым драйвером семейного спроса." },
+  { title: "Экологический риск", description: "Район имеет умеренный рейтинг риска подтопления, что может повлиять на стоимость страхования." },
+  { title: "Центр занятости", description: "В радиусе 3 км находится крупный деловой центр с 15 000+ рабочих мест." },
+  { title: "Возраст здания", description: "Здание построено в 1985 году, капитальный ремонт не проводился с 2005 года." },
+  { title: "Цена за кв.м.", description: "При ₽285 000/кв.м объект на 8% ниже медианы по району ₽310 000/кв.м." },
 ];
 
 const RED_FLAG_POOL: RedFlag[] = [
-  { title: "Deferred Maintenance", description: "Visible signs of aging HVAC, roofing, or plumbing systems that may require $15K–50K in near-term repairs.", severity: "high" },
-  { title: "Flood Zone Proximity", description: "Property is located within or near a FEMA-designated flood zone, potentially affecting insurance costs.", severity: "medium" },
-  { title: "Declining Area Demographics", description: "Population and employment trends in the immediate area show negative momentum over 3 years.", severity: "high" },
-  { title: "Over-Supply Risk", description: "Multiple large developments under construction within 1km may dilute rental demand.", severity: "medium" },
-  { title: "Title or Legal Complexity", description: "Public records indicate potential easements, liens, or boundary disputes requiring legal review.", severity: "high" },
-  { title: "Limited Comparable Data", description: "Few recent transactions of similar properties make accurate valuation challenging.", severity: "low" },
-  { title: "High HOA/Strata Fees", description: "Monthly association fees are above the 75th percentile for similar properties.", severity: "low" },
-  { title: "Noise or Pollution Exposure", description: "Proximity to highways, industrial zones, or airports may affect livability and resale.", severity: "medium" },
+  { title: "Отложенное обслуживание", description: "Видимые признаки износа HVAC, кровли или сантехники, ремонт может потребовать ₽1.5–5 млн.", severity: "high" },
+  { title: "Зона подтопления", description: "Объект расположен в зоне или вблизи зоны риска подтопления, что может повлиять на страховые расходы.", severity: "medium" },
+  { title: "Негативная демография", description: "Тренды населения и занятости в непосредственной близости показывают отрицательную динамику за 3 года.", severity: "high" },
+  { title: "Риск избыточного предложения", description: "Несколько крупных ЖК в стадии строительства в радиусе 1 км могут размыть арендный спрос.", severity: "medium" },
+  { title: "Юридическая сложность", description: "Публичные реестры указывают на возможные сервитуты, залоги или границовые споры.", severity: "high" },
+  { title: "Ограниченные сопоставимые данные", description: "Мало недавних сделок с аналогичными объектами, что затрудняет точную оценку.", severity: "low" },
+  { title: "Высокие коммунальные платежи", description: "Ежемесячные платежи за обслуживание выше 75-го перцентиля для аналогичных объектов.", severity: "low" },
+  { title: "Шум и загрязнение", description: "Близость к магистралям, промзонам или аэропортам может повлиять на комфорт и перепродажу.", severity: "medium" },
 ];
 
 const NEXT_STEP_POOL: NextStep[] = [
-  { title: "Commission Professional Inspection", description: "Engage a licensed building inspector to assess structural, mechanical, and safety systems." },
-  { title: "Verify Financial Projections", description: "Request actual income/expense statements and validate against market comparables." },
-  { title: "Review Zoning & Permits", description: "Confirm current zoning classification and any pending permit applications or violations." },
-  { title: "Conduct Title Search", description: "Engage a title company to verify clear ownership and identify any encumbrances." },
-  { title: "Negotiate Based on Findings", description: "Use identified risks and repair needs as leverage in price negotiations." },
-  { title: "Assess Financing Options", description: "Compare mortgage terms from multiple lenders to optimize capital structure." },
-  { title: "Visit at Different Times", description: "Tour the property during morning, evening, and weekend to assess noise, traffic, and neighborhood activity." },
-  { title: "Check Insurance Quotes", description: "Get preliminary insurance quotes to factor into total cost of ownership." },
+  { title: "Заказать профессиональную инспекцию", description: "Привлечь лицензированного инспектора для оценки конструктивных, инженерных систем и систем безопасности." },
+  { title: "Верифицировать финансовые проекции", description: "Запросить реальные отчёты о доходах/расходах и сверить с рыночными аналогами." },
+  { title: "Проверить зонирование и разрешения", description: "Подтвердить текущую классификацию зонирования и наличие/отсутствие нарушений." },
+  { title: "Провести проверку правового титула", description: "Привлечь юриста для верификации чистоты собственности и выявления обременений." },
+  { title: "Вести переговоры на основе результатов", description: "Использовать выявленные риски и потребности в ремонте как рычаг в ценовых переговорах." },
+  { title: "Оценить варианты финансирования", description: "Сравнить условия ипотеки от нескольких банков для оптимизации структуры капитала." },
+  { title: "Посетить в разное время", description: "Осмотреть объект утром, вечером и в выходные для оценки шума, трафика и активности района." },
+  { title: "Получить котировки страхования", description: "Запросить предварительные котировки страхования для учёта в полной стоимости владения." },
 ];
 
 const SELLER_QUESTIONS: string[] = [
-  "What is the reason for selling, and how long has the property been on the market?",
-  "Are there any known defects, past insurance claims, or pending assessments?",
-  "What are the current monthly operating costs (utilities, taxes, HOA)?",
-  "Have there been any recent renovations, and are permits on file?",
-  "Is there any flexibility on the asking price or closing timeline?",
-  "What is the current lease situation, and are tenants on fixed-term agreements?",
-  "Are there any planned infrastructure or development projects nearby?",
-  "What is the history of property tax assessments and any appeals?",
+  "Какова причина продажи и как давно объект на рынке?",
+  "Есть ли известные дефекты, прошлые страховые случаи или ожидаемые начисления?",
+  "Каковы текущие ежемесячные операционные расходы (коммуналка, налоги, обслуживание)?",
+  "Проводился ли ремонт недавно, и есть ли документы на разрешения?",
+  "Есть ли гибкость по запрашиваемой цене или срокам закрытия сделки?",
+  "Какова текущая ситуация с арендой, есть ли долгосрочные договоры?",
+  "Планируются ли инфраструктурные или девелоперские проекты поблизости?",
+  "Какова история налоговых оценок и были ли обжалования?",
 ];
 
 function getDisplayName(input: AssessmentInput): string {
@@ -95,7 +95,7 @@ function getDisplayName(input: AssessmentInput): string {
   if (input.url) {
     try {
       const u = new URL(input.url);
-      return `${u.hostname} listing`;
+      return `Листинг ${u.hostname}`;
     } catch {
       return input.url.slice(0, 50);
     }
@@ -104,9 +104,9 @@ function getDisplayName(input: AssessmentInput): string {
     return `${input.latitude.toFixed(4)}, ${input.longitude.toFixed(4)}`;
   }
   if (input.photos && input.photos.length > 0) {
-    return `Photo analysis (${input.photos.length} images)`;
+    return `Анализ фото (${input.photos.length} изобр.)`;
   }
-  return "Property Assessment";
+  return "Оценка объекта";
 }
 
 export function generateAssessment(input: AssessmentInput): AssessmentResult {
@@ -153,16 +153,16 @@ export function generateAssessment(input: AssessmentInput): AssessmentResult {
   const confidence: ConfidenceLevel = input.method === 'address' ? 'high' : input.method === 'url' ? 'medium' : 'low';
 
   const summaryTone = zone === 'green'
-    ? "This property presents a compelling opportunity with strong fundamentals. The location, market dynamics, and financial metrics align well with the stated investment goals."
+    ? "Этот объект представляет убедительную возможность с сильными фундаменталами. Локация, рыночная динамика и финансовые показатели хорошо согласуются с заявленными инвестиционными целями."
     : zone === 'yellow'
-      ? "This property has potential but comes with notable considerations. A thorough due diligence process is recommended before committing to ensure the investment aligns with risk tolerance."
-      : "This property carries significant risk factors that warrant careful evaluation. While there may be upside potential, the current risk profile suggests proceeding only with a clear mitigation strategy.";
+      ? "Объект обладает потенциалом, но сопряжён с заметными рисками. Рекомендуется тщательная проверка перед принятием решения."
+      : "Объект несёт значительные факторы риска, требующие внимательной оценки. Рекомендуется действовать только при наличии чёткой стратегии митигации рисков.";
 
   const objection = zone === 'green'
-    ? "The data supports a strong investment thesis. Market trends, comparable transactions, and location fundamentals all point to a well-positioned asset."
+    ? "Данные поддерживают сильный инвестиционный тезис. Рыночные тренды, сопоставимые сделки и локационные фундаменталы указывают на хорошо позиционированный актив."
     : zone === 'yellow'
-      ? "While some concerns exist, they are typical for this market segment. With proper due diligence and negotiation, the risk-reward profile can be optimized."
-      : "The identified risks are real but can be mitigated. Consider negotiating a significant price reduction to account for the risk premium, or structure the deal with contingencies.";
+      ? "Выявленные риски типичны для данного сегмента рынка. При грамотной проверке и переговорах профиль риск/доходность может быть оптимизирован."
+      : "Риски реальны, но поддаются управлению. Рассмотрите значительное снижение цены с учётом премии за риск или структурируйте сделку с условиями.";
 
   const questionsForSeller = pickN(SELLER_QUESTIONS, 3 + Math.floor(rng() * 3), rng);
 
