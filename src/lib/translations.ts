@@ -140,6 +140,11 @@ const en: Record<string, string> = {
   "common.loading": "Loading...",
   "common.error": "Something went wrong",
   "common.example_note": "Some data points are examples for demonstration purposes.",
+  "home.cta_title": "Ready to Decide Smarter?",
+  "home.cta_subtitle": "Start your first property assessment — free, instant, no signup.",
+  "new.location_detected": "Location detected",
+  "new.detecting": "Detecting...",
+  "new.use_location": "Use My Location",
 };
 
 const es: Record<string, string> = {
@@ -914,6 +919,11 @@ const ru: Record<string, string> = {
   "common.loading": "Загрузка...",
   "common.error": "Что-то пошло не так",
   "common.example_note": "Некоторые данные являются примерами для демонстрации.",
+  "home.cta_title": "Готовы Решать Умнее?",
+  "home.cta_subtitle": "Начните первую оценку — бесплатно, мгновенно, без регистрации.",
+  "new.location_detected": "Геопозиция определена",
+  "new.detecting": "Определение...",
+  "new.use_location": "Моя Геопозиция",
 };
 
 const ar: Record<string, string> = {
