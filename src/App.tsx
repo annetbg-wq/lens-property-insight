@@ -20,13 +20,13 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 function PageLoader() {
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <Loader2 className="h-6 w-6 animate-spin text-primary" />
     </div>
   );
 }
 
 const App = () => (
-  <ThemeProvider defaultTheme="light">
+  <ThemeProvider defaultTheme="dark">
     <I18nProvider>
       <TooltipProvider>
         <Toaster />

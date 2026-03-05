@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LANGUAGES, type Language } from '@/lib/translations';
-import { Menu, Sparkles } from 'lucide-react';
+import { Menu, Activity } from 'lucide-react';
 import { useState } from 'react';
 
 export function Header() {
@@ -23,25 +23,25 @@ export function Header() {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full glass">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-6">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-primary-foreground transition-transform group-hover:scale-110">
-            <Sparkles className="h-4 w-4" />
+    <header className="sticky top-0 z-50 w-full glass-strong">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4 md:px-6">
+        <Link to="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 transition-all group-hover:bg-primary/20 group-hover:border-primary/30">
+            <Activity className="h-3.5 w-3.5 text-primary" />
           </div>
-          <span className="text-lg font-bold tracking-tight font-display">
+          <span className="text-sm font-bold tracking-tight">
             Propa <span className="gradient-text">AI</span>
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-1 md:flex">
+        <nav className="hidden items-center gap-0.5 md:flex">
           {links.map(l => (
             <Link key={l.to} to={l.to}>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`text-sm font-medium transition-colors ${
-                  isActive(l.to) ? 'text-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground'
+                className={`text-xs font-medium h-8 px-3 rounded-lg transition-colors ${
+                  isActive(l.to) ? 'text-primary bg-primary/5' : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
                 }`}
               >
                 {l.label}
@@ -50,45 +50,45 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <Select value={language} onValueChange={v => setLanguage(v as Language)}>
-            <SelectTrigger className="h-8 w-[100px] text-xs border-none bg-secondary/50">
+            <SelectTrigger className="h-7 w-[80px] text-[11px] border-border/50 bg-secondary/30 rounded-lg">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
               {LANGUAGES.map(l => (
-                <SelectItem key={l.code} value={l.code}>{l.label}</SelectItem>
+                <SelectItem key={l.code} value={l.code} className="text-xs">{l.label}</SelectItem>
               ))}
             </SelectContent>
           </Select>
 
           <Link to="/new" className="hidden md:block">
-            <Button size="sm" className="rounded-full gap-1.5 px-4 bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-              <Sparkles className="h-3.5 w-3.5" /> {t('nav.new')}
+            <Button size="sm" className="h-7 rounded-lg gap-1.5 px-3 text-[11px] font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
+              {t('nav.new')}
             </Button>
           </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <Menu className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8">
+                <Menu className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-72 glass">
-              <nav className="mt-10 flex flex-col gap-1">
+            <SheetContent side="right" className="w-64 glass-strong border-border/50">
+              <nav className="mt-8 flex flex-col gap-0.5">
                 {links.map(l => (
                   <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start text-base ${isActive(l.to) ? 'text-primary bg-primary/5' : ''}`}
+                      className={`w-full justify-start text-sm rounded-lg ${isActive(l.to) ? 'text-primary bg-primary/5' : ''}`}
                     >
                       {l.label}
                     </Button>
                   </Link>
                 ))}
-                <Link to="/new" onClick={() => setOpen(false)} className="mt-4">
-                  <Button className="w-full rounded-full gap-1.5">
-                    <Sparkles className="h-4 w-4" /> {t('nav.new')}
+                <Link to="/new" onClick={() => setOpen(false)} className="mt-3">
+                  <Button className="w-full rounded-lg gap-1.5 bg-primary text-primary-foreground">
+                    {t('nav.new')}
                   </Button>
                 </Link>
               </nav>

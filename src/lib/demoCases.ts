@@ -12,37 +12,37 @@ const DEMO_CASES: DemoCase[] = [
     key: 'apartment',
     input: {
       method: 'address',
-      address: '350 West 42nd Street, Apt 12F, New York, NY 10036',
+      address: 'ул. Тверская 15, кв. 42, Москва, 125009',
       goal: 'invest',
-      notes: 'Looking at a 2BR luxury apartment in Midtown Manhattan with Hudson River views.',
+      notes: '2-комнатная квартира в центре Москвы, видовой этаж, рядом с метро.',
     },
   },
   {
     key: 'house',
     input: {
       method: 'address',
-      address: '4521 Cedar Lane, Austin, TX 78745',
+      address: 'пос. Барвиха, ул. Сосновая 8, Московская область',
       goal: 'buy',
-      notes: 'Suburban family home, 4BR/3BA, recently renovated kitchen, good school district.',
+      notes: 'Загородный дом 250 кв.м, 4 спальни, участок 15 соток, лес рядом.',
     },
   },
   {
     key: 'land',
     input: {
       method: 'coordinates',
-      latitude: 34.0522,
-      longitude: -118.2437,
+      latitude: 55.7558,
+      longitude: 37.6173,
       goal: 'invest',
-      notes: 'Vacant lot near downtown, zoned for mixed-use development. 0.5 acres.',
+      notes: 'Земельный участок 0.5 га вблизи МКАД, зонирование под смешанную застройку.',
     },
   },
   {
     key: 'commercial',
     input: {
       method: 'address',
-      address: '1200 Woodward Avenue, Detroit, MI 48226',
+      address: 'Невский проспект 100, Санкт-Петербург, 191025',
       goal: 'business',
-      notes: 'Former retail space, 5,000 sqft, ground floor in revitalizing downtown corridor.',
+      notes: 'Торговое помещение 300 кв.м на первой линии, высокий пешеходный трафик.',
     },
   },
   {
@@ -51,16 +51,16 @@ const DEMO_CASES: DemoCase[] = [
       method: 'photo',
       photos: ['demo_window_view.jpg'],
       goal: 'rent',
-      notes: 'Evaluating apartment based on the view from the 8th floor. Coastal city, balcony facing west.',
+      notes: 'Оценка квартиры по виду из окна. 12 этаж, вид на набережную, западная сторона.',
     },
   },
   {
     key: 'listing',
     input: {
       method: 'url',
-      url: 'https://zillow.com/homedetails/925-Pacific-Ave-San-Francisco-CA-94133/15063422_zpid/',
+      url: 'https://cian.ru/sale/flat/298745123/',
       goal: 'invest',
-      notes: 'San Francisco Victorian, listed at $1.2M, needs moderate renovation.',
+      notes: 'Квартира в сталинке на Кутузовском, 85 кв.м, требует косметического ремонта.',
     },
   },
 ];
