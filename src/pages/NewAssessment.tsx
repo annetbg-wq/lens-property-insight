@@ -8,11 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AnalyzingAnimation } from '@/components/AnalyzingAnimation';
 import { MapBackground } from '@/components/MapBackground';
-import { generateAssessment } from '@/lib/mockGenerator';
 import { saveAssessment } from '@/lib/storage';
 import { getDemoInput } from '@/lib/demoCases';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import type { AssessmentInput, Goal, InputMethod } from '@/types/assessment';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import type { AssessmentInput, AssessmentResult, Goal, InputMethod } from '@/types/assessment';
 import { MapPin, Camera, Link as LinkIcon, PenLine, Crosshair, Loader2, Info, Radar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -20,6 +21,7 @@ export default function NewAssessment() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const geo = useGeolocation();
+  const { toast } = useToast();
   const [analyzing, setAnalyzing] = useState(false);
   const [pendingInput, setPendingInput] = useState<AssessmentInput | null>(null);
 
@@ -73,13 +75,54 @@ export default function NewAssessment() {
     setAnalyzing(true);
   };
 
-  const handleComplete = useCallback(() => {
+  const handleComplete = useCallback(async () => {
     if (!pendingInput) return;
-    const result = generateAssessment(pendingInput);
-    saveAssessment(result);
-    setAnalyzing(false);
-    navigate(`/result/${result.id}`);
-  }, [pendingInput, navigate]);
+
+    try {
+      // Call AI edge function for real assessment
+      const { data, error } = await supabase.functions.invoke('assess-property', {
+        body: { input: pendingInput },
+      });
+
+      if (error) throw error;
+      if (!data?.success) throw new Error(data?.error || 'Assessment failed');
+
+      const assessment = data.assessment;
+      const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+      const result: AssessmentResult = {
+        id,
+        input: pendingInput,
+        score: assessment.score,
+        zone: assessment.zone,
+        subScores: assessment.subScores,
+        reasons: assessment.reasons,
+        redFlags: assessment.redFlags || [],
+        nextSteps: assessment.nextSteps || [],
+        confidence: assessment.confidence || 'medium',
+        agentContent: assessment.agentContent,
+        createdAt: new Date().toISOString(),
+        displayName: assessment.displayName || pendingInput.address || 'Оценка объекта',
+      };
+
+      saveAssessment(result);
+      setAnalyzing(false);
+      navigate(`/result/${result.id}`);
+    } catch (err: any) {
+      console.error('AI Assessment failed, using fallback:', err);
+      // Fallback to mock generator if AI fails
+      const { generateAssessment } = await import('@/lib/mockGenerator');
+      const result = generateAssessment(pendingInput);
+      saveAssessment(result);
+      setAnalyzing(false);
+      toast({
+        title: 'Использован резервный анализ',
+        description: 'ИИ-сервис временно недоступен. Результат сгенерирован локально.',
+        variant: 'destructive',
+      });
+      navigate(`/result/${result.id}`);
+    }
+  }, [pendingInput, navigate, toast]);
 
   const loadDemo = (key: string) => {
     const input = getDemoInput(key);
