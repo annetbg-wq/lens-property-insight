@@ -2,11 +2,10 @@ import { useParams } from 'react-router-dom';
 import { useTranslation } from '@/lib/i18n';
 import { getAssessment, getAgentInfo } from '@/lib/storage';
 import { ScoreGauge } from '@/components/ScoreGauge';
-import { MapBackground } from '@/components/MapBackground';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Shield, Phone, Mail, Building2, CheckCircle2, AlertTriangle, Activity, CalendarDays, Map } from 'lucide-react';
+import { Shield, Phone, Mail, Building2, CheckCircle2, AlertTriangle, CalendarDays } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { AssessmentResult, AgentInfo, Zone } from '@/types/assessment';
@@ -33,7 +32,7 @@ export default function SharePage() {
 
   if (!result) return (
     <div className="flex min-h-[60vh] items-center justify-center">
-      <Activity className="h-6 w-6 text-muted-foreground/20 animate-pulse" />
+      <div className="h-8 w-8 rounded-full border-2 border-primary/20 border-t-primary animate-spin" />
     </div>
   );
 
@@ -41,97 +40,96 @@ export default function SharePage() {
   const zoneLabel = result.zone === 'green' ? t('result.green') : result.zone === 'yellow' ? t('result.yellow') : t('result.red');
 
   return (
-    <MapBackground className="min-h-screen">
-      <div className="mx-auto max-w-xl px-4 py-10 md:py-16">
-        <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-2">
-            <Map className="h-3.5 w-3.5 text-primary" />
-            <p className="text-[10px] font-mono text-primary uppercase tracking-wider">{t('share.assessment_by')}</p>
-          </div>
-          <h1 className="mt-2 text-xl font-bold md:text-2xl">{result.displayName}</h1>
+    <div className="min-h-screen relative">
+      <div className="absolute inset-0 ambient-glow-soft" />
+      <div className="relative z-10 mx-auto max-w-xl px-5 py-12 md:py-20">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
+          <p className="text-xs font-medium text-primary uppercase tracking-widest mb-3">{t('share.assessment_by')}</p>
+          <h1 className="text-2xl font-extrabold md:text-3xl">{result.displayName}</h1>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
-          className="mt-8 glass rounded-lg viewfinder viewfinder-bottom p-6 flex flex-col items-center"
+          className="mt-10 rounded-2xl bg-card border border-border/40 p-8 flex flex-col items-center shadow-premium"
         >
-          <ScoreGauge score={result.score} zone={result.zone} size={150} />
-          <Badge className={`mt-3 bg-secondary/50 ${zone.text} border-0 px-4 py-1 text-xs font-mono`}>{zoneLabel}</Badge>
+          <ScoreGauge score={result.score} zone={result.zone} size={160} />
+          <Badge className={`mt-4 bg-secondary ${zone.text} border-0 px-5 py-1.5 text-xs font-semibold rounded-full`}>{zoneLabel}</Badge>
 
-          <div className="mt-5 grid grid-cols-3 gap-2 w-full">
+          <div className="mt-6 grid grid-cols-3 gap-3 w-full">
             {(['risk', 'return', 'stability'] as const).map(k => (
-              <div key={k} className="rounded-md bg-secondary/30 border border-border/20 p-3 text-center">
-                <p className="text-lg font-bold font-mono">{result.subScores[k]}</p>
-                <p className="text-[9px] font-medium text-muted-foreground uppercase tracking-wider">{t(`result.${k}`)}</p>
+              <div key={k} className="rounded-xl bg-secondary/50 py-3.5 text-center">
+                <p className="text-xl font-bold">{result.subScores[k]}</p>
+                <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mt-1">{t(`result.${k}`)}</p>
               </div>
             ))}
           </div>
         </motion.div>
 
-        <Separator className="my-8 bg-border/15" />
+        <Separator className="my-10 bg-border/20" />
 
-        <p className="text-xs text-muted-foreground leading-relaxed">{result.agentContent.clientSummary}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed">{result.agentContent.clientSummary}</p>
 
         {result.redFlags.length > 0 && (
-          <div className="mt-6">
-            <h3 className="mb-2 flex items-center gap-1.5 text-sm font-bold">
-              <AlertTriangle className="h-3.5 w-3.5 text-destructive" />{t('result.red_flags')}
+          <div className="mt-8">
+            <h3 className="mb-3 flex items-center gap-2 text-base font-bold">
+              <AlertTriangle className="h-4 w-4 text-destructive" />{t('result.red_flags')}
             </h3>
             {result.redFlags.slice(0, 2).map((f, i) => (
-              <p key={i} className="mb-1 text-xs text-muted-foreground flex items-start gap-1.5">
-                <span className="text-destructive mt-0.5">•</span> {f.title}
+              <p key={i} className="mb-2 text-sm text-muted-foreground flex items-start gap-2">
+                <span className="text-destructive mt-1 shrink-0">•</span> {f.title}
               </p>
             ))}
           </div>
         )}
 
-        <div className="mt-6">
-          <h3 className="mb-2 flex items-center gap-1.5 text-sm font-bold">
-            <CheckCircle2 className="h-3.5 w-3.5 text-primary" />{t('result.next_steps')}
+        <div className="mt-8">
+          <h3 className="mb-3 flex items-center gap-2 text-base font-bold">
+            <CheckCircle2 className="h-4 w-4 text-primary" />{t('result.next_steps')}
           </h3>
           {result.nextSteps.slice(0, 3).map((s, i) => (
-            <p key={i} className="mb-1 text-xs text-muted-foreground flex items-start gap-1.5">
-              <span className="text-primary mt-0.5">•</span> {s.title}
+            <p key={i} className="mb-2 text-sm text-muted-foreground flex items-start gap-2">
+              <span className="text-primary mt-1 shrink-0">•</span> {s.title}
             </p>
           ))}
         </div>
 
         {agent && (
           <>
-            <Separator className="my-8 bg-border/15" />
-            <div className="glass rounded-lg p-5 border border-border/30">
-              <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.15em] font-mono mb-2">{t('share.presented_by')}</p>
-              <p className="text-sm font-bold">{agent.name}</p>
+            <Separator className="my-10 bg-border/20" />
+            <div className="rounded-2xl bg-card border border-border/40 p-6 shadow-premium">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-3">{t('share.presented_by')}</p>
+              <p className="text-base font-bold">{agent.name}</p>
               {agent.company && (
-                <p className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                  <Building2 className="h-3 w-3" />{agent.company}
+                <p className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                  <Building2 className="h-3.5 w-3.5" />{agent.company}
                 </p>
               )}
-              <div className="mt-3 flex flex-wrap gap-1.5">
+              <div className="mt-4 flex flex-wrap gap-2">
                 {agent.phone && (
-                  <Button variant="outline" size="sm" className="gap-1.5 rounded-lg text-xs h-8 border-border/30">
-                    <Phone className="h-3 w-3" />{agent.phone}
+                  <Button variant="outline" size="sm" className="gap-2 rounded-xl text-xs h-9">
+                    <Phone className="h-3.5 w-3.5" />{agent.phone}
                   </Button>
                 )}
                 {agent.email && (
-                  <Button variant="outline" size="sm" className="gap-1.5 rounded-lg text-xs h-8 border-border/30">
-                    <Mail className="h-3 w-3" />{agent.email}
+                  <Button variant="outline" size="sm" className="gap-2 rounded-xl text-xs h-9">
+                    <Mail className="h-3.5 w-3.5" />{agent.email}
                   </Button>
                 )}
               </div>
-              <Button className="mt-4 w-full rounded-lg gap-2 h-11 bg-primary text-primary-foreground glow-green font-bold" size="lg">
+              <Button className="mt-5 w-full rounded-2xl gap-2 h-12 bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20" size="lg">
                 <CalendarDays className="h-4 w-4" /> {t('share.request_tour')}
               </Button>
             </div>
           </>
         )}
 
-        <div className="mt-8 flex items-start gap-2.5 rounded-lg bg-secondary/15 border border-border/15 p-4">
-          <Shield className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          <p className="text-[10px] text-muted-foreground leading-relaxed">{t('about.disclaimer')}</p>
+        <div className="mt-10 flex items-start gap-3 rounded-2xl bg-secondary/30 border border-border/30 p-5">
+          <Shield className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+          <p className="text-xs text-muted-foreground leading-relaxed">{t('about.disclaimer')}</p>
         </div>
       </div>
-    </MapBackground>
+    </div>
   );
 }
