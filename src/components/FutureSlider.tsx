@@ -18,15 +18,15 @@ export function FutureSlider({ items }: FutureSliderProps) {
   const [years, setYears] = useState(0);
 
   return (
-    <div className="rounded-lg border border-border/40 bg-card/60 p-5">
-      <div className="flex items-center justify-between mb-4">
+    <div className="rounded-2xl bg-card border border-border/40 p-6 shadow-premium">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h3 className="text-sm font-bold">{t('compare.future') || 'Прогноз'}</h3>
-          <p className="text-[10px] text-muted-foreground font-mono mt-0.5">
-            {years === 0 ? 'Текущее' : `+${years} ${years === 1 ? 'год' : years < 5 ? 'года' : 'лет'}`}
+          <h3 className="text-base font-bold">{t('compare.future') || 'Forecast'}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {years === 0 ? 'Current' : `+${years} year${years > 1 ? 's' : ''}`}
           </p>
         </div>
-        <span className="text-xs font-mono text-primary bg-primary/10 px-2 py-0.5 rounded">
+        <span className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full">
           {years}Y
         </span>
       </div>
@@ -36,10 +36,10 @@ export function FutureSlider({ items }: FutureSliderProps) {
         onValueChange={([v]) => setYears(v)}
         max={5}
         step={1}
-        className="mb-5"
+        className="mb-6"
       />
 
-      <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
+      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${items.length}, 1fr)` }}>
         {items.map((item) => {
           const projected = projectScore(item.score, years, item.zone);
           const delta = projected - item.score;
@@ -48,12 +48,12 @@ export function FutureSlider({ items }: FutureSliderProps) {
           return (
             <motion.div
               key={item.id}
-              className="rounded-md bg-secondary/30 border border-border/30 p-3 text-center"
+              className="rounded-xl bg-secondary/40 border border-border/30 p-4 text-center"
               layout
             >
-              <p className="text-[10px] text-muted-foreground truncate mb-2">{item.displayName.split(',')[0]}</p>
+              <p className="text-xs text-muted-foreground truncate mb-2">{item.displayName.split(',')[0]}</p>
               <motion.p
-                className="text-2xl font-bold font-mono"
+                className="text-3xl font-bold"
                 key={projected}
                 initial={{ scale: 1.1 }}
                 animate={{ scale: 1 }}
@@ -61,7 +61,7 @@ export function FutureSlider({ items }: FutureSliderProps) {
                 {projected}
               </motion.p>
               {years > 0 && (
-                <p className={`text-[10px] font-mono font-bold ${deltaColor}`}>
+                <p className={`text-xs font-bold ${deltaColor} mt-1`}>
                   {delta > 0 ? '+' : ''}{delta}
                 </p>
               )}
