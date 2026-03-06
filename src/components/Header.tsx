@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { LANGUAGES, type Language } from '@/lib/translations';
-import { Menu, Activity, User, Briefcase } from 'lucide-react';
+import { Menu, Activity, User, Briefcase, Globe } from 'lucide-react';
 import { useState } from 'react';
 
 export function Header() {
@@ -66,16 +66,20 @@ export function Header() {
             <Briefcase className={`h-3 w-3 ${viewMode === 'agent' ? 'text-primary' : 'text-muted-foreground'}`} />
           </div>
 
-          <Select value={language} onValueChange={v => setLanguage(v as Language)}>
-            <SelectTrigger className="h-7 w-[80px] text-[11px] border-border/50 bg-secondary/30 rounded-lg">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {LANGUAGES.map(l => (
-                <SelectItem key={l.code} value={l.code} className="text-xs">{l.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {/* Language selector with flag */}
+          <div className="flex items-center gap-1">
+            <Globe className="h-3 w-3 text-muted-foreground hidden sm:block" />
+            <Select value={language} onValueChange={v => setLanguage(v as Language)}>
+              <SelectTrigger className="h-7 w-[90px] text-[11px] border-border/50 bg-secondary/30 rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {LANGUAGES.map(l => (
+                  <SelectItem key={l.code} value={l.code} className="text-xs">{l.flag} {l.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
           <Link to="/new" className="hidden md:block">
             <Button size="sm" className="h-7 rounded-lg gap-1.5 px-3 text-[11px] font-semibold bg-primary hover:bg-primary/90 text-primary-foreground">
@@ -104,12 +108,12 @@ export function Header() {
                 {/* Mobile mode toggle */}
                 <div className="flex items-center gap-2 mt-4 px-4 py-2 rounded-lg border border-border/30">
                   <User className={`h-3.5 w-3.5 ${viewMode === 'client' ? 'text-primary' : 'text-muted-foreground'}`} />
-                  <Label className="text-xs text-muted-foreground">Клиент</Label>
+                  <Label className="text-xs text-muted-foreground">{t('result.client_view')}</Label>
                   <Switch 
                     checked={viewMode === 'agent'}
                     onCheckedChange={(checked) => setViewMode(checked ? 'agent' : 'client')}
                   />
-                  <Label className="text-xs text-muted-foreground">Агент</Label>
+                  <Label className="text-xs text-muted-foreground">{t('result.agent_view')}</Label>
                   <Briefcase className={`h-3.5 w-3.5 ${viewMode === 'agent' ? 'text-primary' : 'text-muted-foreground'}`} />
                 </div>
                 <Link to="/new" onClick={() => setOpen(false)} className="mt-3">
