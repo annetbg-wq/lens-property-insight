@@ -51,8 +51,14 @@ export function I18nProvider({ children }: I18nProviderProps) {
   );
 }
 
+const fallbackValue: I18nContextValue = {
+  language: 'en',
+  setLanguage: () => {},
+  t: (key: string) => translations.en[key] ?? key,
+  dir: 'ltr',
+};
+
 export function useTranslation() {
   const ctx = useContext(I18nContext);
-  if (!ctx) throw new Error('useTranslation must be used within I18nProvider');
-  return ctx;
+  return ctx ?? fallbackValue;
 }
